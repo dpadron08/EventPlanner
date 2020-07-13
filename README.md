@@ -308,4 +308,4 @@ SDK
         });
     ```
 
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
+- No API endpoints
