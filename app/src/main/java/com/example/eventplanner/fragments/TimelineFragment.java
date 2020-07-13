@@ -6,7 +6,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,14 @@ import android.widget.Button;
 
 import com.example.eventplanner.ComposeEventActivity;
 import com.example.eventplanner.R;
+import com.example.eventplanner.adapters.EventsAdapter;
+import com.example.eventplanner.models.Event;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,12 +33,19 @@ import com.example.eventplanner.R;
  */
 public class TimelineFragment extends Fragment {
 
+    private static final String TAG = "TimelineFragment";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     Button btnAddEvent;
+    
+    // for recycler view list of events
+    RecyclerView rvEvents;
+    protected EventsAdapter adapter;
+    protected List<Event> allEvents;
 
 
     // TODO: Rename and change types of parameters
@@ -79,10 +97,45 @@ public class TimelineFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnAddEvent = view.findViewById(R.id.btnAddEvent);
+        
+        rvEvents = view.findViewById(R.id.rvEvents);
+        allEvents = new ArrayList<>();
+        adapter = new EventsAdapter(getContext(), allEvents);
+        rvEvents.setAdapter(adapter);
+        rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+
         btnAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goComposeEventActivity();
+            }
+        });
+        
+        queryEvents();
+    }
+
+    private void queryEvents() {
+        adapter.clear();
+        ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
+        query.setLimit(20);
+        // order posts by creation date (newest first)
+        query.addDescendingOrder(Event.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Event>() {
+            @Override
+            public void done(List<Event> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Failed to query events");
+                    return;
+                }
+
+                // for debugging purposes let's print every event description to logcat
+                for (Event event : objects) {
+                    Log.i(TAG, "Event title: " + event.getTitle() + "Description: " + event.getDescription());
+                }
+
+                allEvents.addAll(objects);
+                adapter.notifyDataSetChanged();
+
             }
         });
     }
