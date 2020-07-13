@@ -118,6 +118,7 @@ public class TimelineFragment extends Fragment {
         adapter.clear();
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
         query.setLimit(20);
+        query.include(Event.KEY_AUTHOR);
         // order posts by creation date (newest first)
         query.addDescendingOrder(Event.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Event>() {
@@ -130,7 +131,8 @@ public class TimelineFragment extends Fragment {
 
                 // for debugging purposes let's print every event description to logcat
                 for (Event event : objects) {
-                    Log.i(TAG, "Event title: " + event.getTitle() + "Description: " + event.getDescription());
+                    Log.i(TAG, "Event title: " + event.getTitle() + "Description: " + event.getDescription()
+                    + "image url: " + event.getImage().getUrl());
                 }
 
                 allEvents.addAll(objects);
