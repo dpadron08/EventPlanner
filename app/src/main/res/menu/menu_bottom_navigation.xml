@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_timeline"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Timeline"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_friends"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Friends"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Profile"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_map"
+        android:icon="@android:drawable/ic_dialog_map"
+        android:title="Map"
+        app:showAsAction="always" />
+</menu>
