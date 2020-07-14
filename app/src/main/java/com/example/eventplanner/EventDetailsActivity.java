@@ -1,6 +1,7 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -8,14 +9,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.eventplanner.adapters.FriendsAdapter;
 import com.example.eventplanner.models.Event;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 
 import java.util.Date;
+import java.util.List;
 
 public class EventDetailsActivity extends AppCompatActivity {
+
+    private static final String TAG = "EventDetailsActivity";
 
     Event event;
 
@@ -27,6 +33,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     TextView tvRestrictions;
     ImageView ivImage;
     RelativeLayout container;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -5,12 +5,25 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.eventplanner.R;
+import com.example.eventplanner.adapters.FriendsAdapter;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +36,12 @@ public class FriendsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+
+    RecyclerView rvFriends;
+    List<ParseUser> allFriends;
+    FriendsAdapter adapter;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -71,5 +90,32 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        rvFriends = view.findViewById(R.id.rvFriends);
+        allFriends = new ArrayList<>();
+        adapter = new FriendsAdapter(getContext(), allFriends);
+        // set the adapter on the recycler view
+        rvFriends.setAdapter(adapter);
+        rvFriends.setLayoutManager(new LinearLayoutManager(getContext()));
+        queryFriends();
+    }
+
+    private void queryFriends() {
+        adapter.clear();
+        // specify what type of data we want to query
+        ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
+        ParseQuery<ParseUser> query = relation.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                allFriends.clear();
+                allFriends.addAll(objects);
+                adapter.notifyDataSetChanged();
+
+                for (ParseUser a : allFriends) {
+                    Log.i("FriendsFragment", "Friend :  " + a.getUsername());
+                }
+
+            }
+        });
     }
 }
