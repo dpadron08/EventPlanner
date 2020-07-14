@@ -7,10 +7,12 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import org.parceler.Parcel;
 import org.xml.sax.DTDHandler;
 
 import java.util.Date;
 
+@Parcel(analyze={Event.class})
 @ParseClassName("Event")
 public class Event extends com.parse.ParseObject {
 

@@ -1,20 +1,24 @@
 package com.example.eventplanner.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.eventplanner.EventDetailsActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
 import com.parse.ParseFile;
 
+import org.parceler.Parcels;
 import org.w3c.dom.Text;
 
 import java.util.Date;
@@ -67,6 +71,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         TextView tvDate;
         TextView tvRestrictions;
         ImageView ivImage;
+        RelativeLayout container;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,10 +82,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             tvDate = itemView.findViewById(R.id.tvDate);
             tvRestrictions = itemView.findViewById(R.id.tvRestrictions);
             ivImage = itemView.findViewById(R.id.ivImage);
+            container = itemView.findViewById(R.id.container);
 
         }
 
-        public void bind(Event event) {
+        public void bind(final Event event) {
             tvTitle.setText(event.getTitle());
             tvDescription.setText(event.getDescription());
             tvAuthor.setText(event.getAuthor().getUsername());
@@ -95,6 +101,16 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
+
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, EventDetailsActivity.class);
+                    intent.putExtra("event", Parcels.wrap(event));
+                    context.startActivity(intent);
+                }
+            });
+
         }
     }
 }
