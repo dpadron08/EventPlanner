@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="4dp"
-        android:text="TextView"
+        android:text="Event title not found"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         tools:text="The Event Title" />
 
@@ -28,7 +28,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ivImage"
-        android:text="TextView"
+        android:text="Event description not found"
         tools:text="The event description" />
 
     <TextView
@@ -41,7 +41,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ivImage"
-        android:text="TextView"
+        android:text="Event author not found"
         tools:text="The author" />
 
     <TextView
@@ -54,7 +54,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ivImage"
-        android:text="TextView"
+        android:text="Event location not found"
         tools:text="The location" />
 
     <TextView
@@ -67,7 +67,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ivImage"
-        android:text="TextView"
+        android:text="Event date not found"
         tools:text="The date" />
 
     <TextView
@@ -80,7 +80,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ivImage"
-        android:text="TextView"
+        android:text="Event restrictions not found"
         tools:text="The given restrictions" />
 
     <ImageView

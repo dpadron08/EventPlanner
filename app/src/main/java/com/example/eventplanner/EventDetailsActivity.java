@@ -55,15 +55,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         tvDescription.setText(event.getDescription());
         tvAuthor.setText(event.getAuthor().getUsername());
 
-        tvLocation.setText(event.getLocation().toString()); // getting geo point
+        if (event.getLocation() != null) {
+            tvLocation.setText(event.getLocation().toString()); // getting geo point
+        }
 
-        String date = ((Date) event.getDate()).toString();
-        tvDate.setText(date); // get Datetime
+        if (event.getDate() != null) {
+            String date = ((Date) event.getDate()).toString();
+            tvDate.setText(date); // get Datetime
+        }
         tvRestrictions.setText(event.getRestrictions());
 
         ParseFile image = event.getImage();
         if (image != null) {
             Glide.with(this).load(image.getUrl()).into(ivImage);
+        } else {
+            ivImage.setImageResource(R.drawable.blankpfp);
         }
     }
 }
