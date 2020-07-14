@@ -21,8 +21,12 @@ import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
@@ -158,10 +162,30 @@ public class TimelineFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 20  && resultCode == Activity.RESULT_OK) {
-            Event event = Parcels.unwrap(data.getParcelableExtra("event"));
+            final Event event = Parcels.unwrap(data.getParcelableExtra("event"));
             allEvents.add(0, event);
             adapter.notifyItemInserted(0);
             rvEvents.smoothScrollToPosition(0);
+
+            // add newly created event to list of events the user is subscribed to
+            final ParseUser user = ParseUser.getCurrentUser();
+            user.fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    if (e != null) {
+                        Log.i(TAG, "Failed to add event to subscriptions list");
+                        return;
+                    }
+                    user.getRelation("subscriptions").add(event);
+                    user.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            Log.i(TAG, "Saved created event to subscriptions list");
+                        }
+                    });
+                }
+            });
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
