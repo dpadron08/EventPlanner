@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".EventDetailsActivity"></activity>
+        <activity android:name=".AddFriendActivity"></activity>
+        <activity android:name=".EventDetailsActivity" />
         <activity android:name=".ComposeEventActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>

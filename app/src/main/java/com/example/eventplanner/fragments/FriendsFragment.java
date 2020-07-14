@@ -1,5 +1,6 @@
 package com.example.eventplanner.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.example.eventplanner.AddFriendActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.FriendsAdapter;
 import com.parse.FindCallback;
@@ -41,6 +44,7 @@ public class FriendsFragment extends Fragment {
     RecyclerView rvFriends;
     List<ParseUser> allFriends;
     FriendsAdapter adapter;
+    Button btnAddFriend;
 
 
     // TODO: Rename and change types of parameters
@@ -90,6 +94,15 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        btnAddFriend = view.findViewById(R.id.btnAddFriend);
+        btnAddFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goAddFriendActivity();
+            }
+        });
+
+
         rvFriends = view.findViewById(R.id.rvFriends);
         allFriends = new ArrayList<>();
         adapter = new FriendsAdapter(getContext(), allFriends);
@@ -97,6 +110,12 @@ public class FriendsFragment extends Fragment {
         rvFriends.setAdapter(adapter);
         rvFriends.setLayoutManager(new LinearLayoutManager(getContext()));
         queryFriends();
+    }
+
+    private void goAddFriendActivity() {
+        Intent intent = new Intent(getContext(), AddFriendActivity.class);
+        // will need to convert to startActivityForResult
+        startActivity(intent);
     }
 
     private void queryFriends() {
