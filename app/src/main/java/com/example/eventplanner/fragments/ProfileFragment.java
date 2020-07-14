@@ -1,5 +1,10 @@
 package com.example.eventplanner.fragments;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,12 +13,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.eventplanner.R;
@@ -30,6 +38,11 @@ import com.parse.ParseUser;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +63,9 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     private static final String TAG = "ProfileFragment";
+    // PICK_PHOTO_CODE is a constant integer
+    public final static int PICK_PHOTO_CODE = 1046;
+    File photoFile = null;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -60,8 +76,7 @@ public class ProfileFragment extends Fragment {
     ImageView ivProfilePic;
     TextView tvUsername;
     TextView tvInterests;
-
-
+    Button btnAddProfilePicture;
 
 
     public ProfileFragment() {
@@ -110,6 +125,7 @@ public class ProfileFragment extends Fragment {
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvUsername = view.findViewById(R.id.tvUsername);
         tvInterests = view.findViewById(R.id.tvInterests);
+        btnAddProfilePicture = view.findViewById(R.id.btnAddProfilePicture);
         queryUserProfile(); // get user attributes and populate the views with data
 
 
@@ -119,7 +135,47 @@ public class ProfileFragment extends Fragment {
         rvEvents.setAdapter(adapter);
         rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
         querySubscribedEvents();
+
+        btnAddProfilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPickPhoto(view);
+            }
+        });
     }
+
+    private void onPickPhoto(View view) {
+        // Create intent for picking a photo from the gallery
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Bring up gallery to select a photo
+            startActivityForResult(intent, PICK_PHOTO_CODE);
+        }
+    }
+
+    public Bitmap loadFromUri(Uri photoUri) {
+        Bitmap image = null;
+        try {
+            // check version of Android on device
+            if(Build.VERSION.SDK_INT > 27){
+                // on newer versions of Android, use the new decodeBitmap method
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), photoUri);
+                image = ImageDecoder.decodeBitmap(source);
+            } else {
+                // support older versions of Android by using getBitmap
+                image = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), photoUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+
 
     private void queryUserProfile() {
         ParseUser currentUser = ParseUser.getCurrentUser();
@@ -163,5 +219,53 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((data != null) && requestCode == PICK_PHOTO_CODE) {
+            Uri photoUri = data.getData();
+
+            // Load the image located at photoUri into selectedImage
+            Bitmap selectedImage = loadFromUri(photoUri);
+
+            // convert the bitmap to file format
+            photoFile = new File(getContext().getCacheDir(), "photo");
+            try {
+                photoFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Bitmap bitmap = selectedImage;
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] bitmapdata = bos.toByteArray();
+            // write the bytes to a file
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(photoFile);
+                fos.write(bitmapdata);
+                fos.flush();
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // load selected image into a preview
+            ivProfilePic.setImageBitmap(selectedImage);
+            saveProfilePic();
+
+        }
+
+    }
+
+    private void saveProfilePic() {
+        ParseUser user = ParseUser.getCurrentUser();
+        user.put("profilePicture", new ParseFile(photoFile));
+        user.saveInBackground();
+        Toast.makeText(getContext(), "PFP saved!", Toast.LENGTH_SHORT).show();
+    }
 
 }
