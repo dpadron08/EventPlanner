@@ -1,5 +1,6 @@
 package com.example.eventplanner.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -22,6 +23,8 @@ import com.example.eventplanner.models.Event;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +151,18 @@ public class TimelineFragment extends Fragment {
     private void goComposeEventActivity() {
         Intent intent = new Intent(getContext(), ComposeEventActivity.class);
         // will need to convert to startActivityforResult
-        startActivity(intent);
+        startActivityForResult(intent, 20);
     }
 
+    // an event was created
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 20  && resultCode == Activity.RESULT_OK) {
+            Event event = Parcels.unwrap(data.getParcelableExtra("event"));
+            allEvents.add(0, event);
+            adapter.notifyItemInserted(0);
+            rvEvents.smoothScrollToPosition(0);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

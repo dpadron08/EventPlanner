@@ -91,10 +91,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             tvDescription.setText(event.getDescription());
             tvAuthor.setText(event.getAuthor().getUsername());
 
-            tvLocation.setText(event.getLocation().toString()); // getting geo point
+            if (event.getLocation() != null) {
+                tvLocation.setText(event.getLocation().toString()); // getting geo point
+            }
+            if (event.getDate() != null) {
+                String date = ((Date) event.getDate()).toString();
+                tvDate.setText(date); // get Datetime
+            }
 
-            String date = ((Date) event.getDate()).toString();
-            tvDate.setText(date); // get Datetime
             tvRestrictions.setText(event.getRestrictions());
 
             ParseFile image = event.getImage();
