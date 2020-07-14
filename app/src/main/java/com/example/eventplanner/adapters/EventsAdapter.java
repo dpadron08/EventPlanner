@@ -100,6 +100,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             ParseFile image = event.getImage();
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivImage);
+            } else {
+                ivImage.setImageResource(R.drawable.blankpfp);
             }
 
             container.setOnClickListener(new View.OnClickListener() {

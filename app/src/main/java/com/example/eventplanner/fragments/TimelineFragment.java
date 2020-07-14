@@ -130,10 +130,13 @@ public class TimelineFragment extends Fragment {
                 }
 
                 // for debugging purposes let's print every event description to logcat
+                /*
                 for (Event event : objects) {
                     Log.i(TAG, "Event title: " + event.getTitle() + "Description: " + event.getDescription()
                     + "image url: " + event.getImage().getUrl());
                 }
+
+                 */
 
                 allEvents.addAll(objects);
                 adapter.notifyDataSetChanged();
