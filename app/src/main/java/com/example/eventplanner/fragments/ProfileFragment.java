@@ -5,12 +5,33 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.eventplanner.R;
+import com.example.eventplanner.adapters.EventsAdapter;
+import com.example.eventplanner.models.Event;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,6 +39,7 @@ import com.example.eventplanner.R;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+    private static final String TAG = "ProfileFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +49,20 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+
+    // for recycler view list of events
+    RecyclerView rvEvents;
+    protected EventsAdapter adapter;
+    protected List<Event> allEvents;
+
+    // other profile elements
+    ImageView ivProfilePic;
+    TextView tvUsername;
+    TextView tvInterests;
+
+
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -71,5 +107,57 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ivProfilePic = view.findViewById(R.id.ivProfilePicture);
+        tvUsername = view.findViewById(R.id.tvUsername);
+        tvInterests = view.findViewById(R.id.tvInterests);
+        queryUserProfile(); // get user attributes and populate the views with data
+
+
+        rvEvents = view.findViewById(R.id.rvEvents);
+        allEvents = new ArrayList<>();
+        adapter = new EventsAdapter(getContext(), allEvents);
+        rvEvents.setAdapter(adapter);
+        rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+        querySubscribedEvents();
+    }
+
+    private void queryUserProfile() {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        currentUser.fetchInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e != null) {
+                    Log.i(TAG, "Failed to query current user");
+                    return;
+                }
+                tvUsername.setText(((ParseUser)object).getUsername());
+                tvInterests.setText(((ParseUser)object).getString("interests"));
+                ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
+                if (image != null) {
+                    Glide.with(getContext()).load(image.getUrl()).into(ivProfilePic);
+                }
+            }
+        });
+
+
+    }
+
+    private void querySubscribedEvents() {
+        adapter.clear();
+        ParseRelation<Event> relation = ParseUser.getCurrentUser().getRelation("subscriptions");
+        ParseQuery<Event> query = relation.getQuery();
+        query.include("author");
+        query.findInBackground(new FindCallback<Event>() {
+            @Override
+            public void done(List<Event> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Failed to query subscribed to events");
+                    return;
+                }
+                allEvents.addAll(objects);
+                adapter.notifyDataSetChanged();;
+
+            }
+        });
     }
 }
