@@ -70,5 +70,8 @@ public class Event extends com.parse.ParseObject {
     public ParseFile getImage() {
         return getParseFile(KEY_IMAGE);
     }
-    // TODO set image
+
+    public void setImage(ParseFile parseFile) {
+        put(KEY_IMAGE, parseFile);
+    }
 }

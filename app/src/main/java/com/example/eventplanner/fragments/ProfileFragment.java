@@ -39,7 +39,6 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    private static final String TAG = "ProfileFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,6 +49,7 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private static final String TAG = "ProfileFragment";
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -162,4 +162,6 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
+
 }
