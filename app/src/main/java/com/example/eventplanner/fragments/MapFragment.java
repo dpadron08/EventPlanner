@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
+import com.example.eventplanner.models.Event;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,9 +37,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -63,6 +74,7 @@ public class MapFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private static final String TAG = "MapFragment";
     SupportMapFragment mapFragment;
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -76,6 +88,7 @@ public class MapFragment extends Fragment {
      * returned in Activity.onActivityResult
      */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    List<Event> allEvents = new ArrayList<>();
 
 
     public MapFragment() {
@@ -123,6 +136,54 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setUpMapIfNeeded();
+        queryEvents();
+    }
+
+    private void queryEvents() {
+        ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
+        query.findInBackground(new FindCallback<Event>() {
+            @Override
+            public void done(List<Event> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Failed to query events");
+                    return;
+                }
+
+                // for debugging purposes let's print every event description to logcat
+
+                for (Event event : objects) {
+                    Log.i(TAG, "Event title: " + event.getTitle() + "Location : " + event.getLocation().toString());
+                }
+
+                allEvents.clear();
+                allEvents.addAll(objects);
+                placePins();
+            }
+        });
+    }
+
+    private void placePins() {
+        List<LatLng> listOfLatLngs = new ArrayList<>();
+        for (Event e : allEvents) {
+            if (e.getLocation() != null) {
+                listOfLatLngs.add(new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude()));
+            }
+        }
+        for (LatLng loc : listOfLatLngs) {
+            // Define color of marker icon
+            BitmapDescriptor defaultMarker =
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+            // Extract content from alert dialog
+            String title = "My title";
+            String snippet = "My Snippet";
+            // Creates and adds marker to the map
+
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title(title)
+                    .snippet(snippet)
+                    .icon(defaultMarker));
+        }
 
     }
 
