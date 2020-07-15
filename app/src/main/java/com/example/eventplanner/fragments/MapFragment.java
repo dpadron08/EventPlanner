@@ -152,6 +152,9 @@ public class MapFragment extends Fragment {
                 // for debugging purposes let's print every event description to logcat
 
                 for (Event event : objects) {
+                    if (event.getLocation() == null) {
+                        continue;
+                    }
                     Log.i(TAG, "Event title: " + event.getTitle() + "Location : " + event.getLocation().toString());
                 }
 

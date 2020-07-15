@@ -53,7 +53,9 @@ public class Event extends com.parse.ParseObject {
         Object object = get("date");
         return (Date) object;
     }
-    // TODO set date
+    public void setDate(Date date) {
+        put(KEY_DATE, date);
+    }
 
     public String getRestrictions() {
         return getString(KEY_RESTRICTIONS);

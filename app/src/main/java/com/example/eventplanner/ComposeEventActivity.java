@@ -2,6 +2,8 @@ package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
@@ -12,10 +14,15 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.eventplanner.fragments.DatePickerFragment;
+import com.example.eventplanner.fragments.TimePickerFragment;
 import com.example.eventplanner.models.Event;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -30,8 +37,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
 
-public class ComposeEventActivity extends AppCompatActivity {
+public class ComposeEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private static final String TAG = "ComposeEventActivity";
 
@@ -44,8 +53,15 @@ public class ComposeEventActivity extends AppCompatActivity {
     EditText etDescription;
     EditText etRestrictions;
     Button btnSubmit;
+    Button btnPickDate;
+    Button btnPickTime;
+    TextView tvDateTime;
 
     private File photoFile = null;
+    Calendar calendar = Calendar.getInstance();
+    Date date =  null;
+    boolean timePicked = false;
+    boolean datePicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +75,9 @@ public class ComposeEventActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.etDescription);
         etRestrictions = findViewById(R.id.etRestrictions);
         btnSubmit = findViewById(R.id.btnSubmit);
+        btnPickDate = findViewById(R.id.btnPickDate);
+        btnPickTime = findViewById(R.id.btnPickTime);
+        tvDateTime = findViewById(R.id.tvDateTime);
 
         ivEventImage.setImageResource(R.drawable.blankpfp);
 
@@ -86,6 +105,20 @@ public class ComposeEventActivity extends AppCompatActivity {
                 onPickPhoto(view);
             }
         });
+
+        btnPickDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog(view);
+            }
+        });
+
+        btnPickTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePickerDialog(view);
+            }
+        });
     }
 
     private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user) {
@@ -94,6 +127,12 @@ public class ComposeEventActivity extends AppCompatActivity {
         event.setDescription(description);
         event.setRestrictions(restrictions);
         event.setAuthor(user);
+
+        if (datePicked && timePicked) {
+            Date date = calendar.getTime();
+            Log.i(TAG, "Date: "+date);
+            event.setDate(date);
+        }
         if (photoFile != null) {
             event.setImage(new ParseFile(photoFile));
         }
@@ -189,5 +228,43 @@ public class ComposeEventActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    // attach to an onclick handler to show the date picker
+    public void showDatePickerDialog(View v) {
+        DatePickerFragment newFragment = new DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, monthOfYear);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        datePicked = true;
+        if (timePicked && datePicked) {
+            tvDateTime.setText(calendar.getTime().toString());
+        }
+        if (!timePicked) {
+            Toast.makeText(this, "Please choose a time", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // attach to an onclick handler to show the time picker
+    public void showTimePickerDialog(View v) {
+        TimePickerFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        //Log.i(TAG, "Calendar Day of month: "+ calendar.get(Calendar.DAY_OF_MONTH) + "Minute : " + calendar.get(Calendar.MINUTE));
+        timePicked = true;
+        if (timePicked && datePicked) {
+            tvDateTime.setText(calendar.getTime().toString());
+        }
+        if (!datePicked) {
+            Toast.makeText(this, "Please choose a date", Toast.LENGTH_SHORT).show();
+        }
     }
 }
