@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
+        final Fragment theMap = new MapFragment();
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -55,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Map", Toast.LENGTH_SHORT).show();
                     default:
                         //fragment = fragment4;
-                        fragment = new MapFragment();
+                        //fragment = new MapFragment();
+                        fragment = theMap;
                         break;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();

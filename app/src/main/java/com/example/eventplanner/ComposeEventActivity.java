@@ -149,6 +149,7 @@ public class ComposeEventActivity extends AppCompatActivity {
         return image;
     }
 
+    // see https://stackoverflow.com/questions/7769806/convert-bitmap-to-file
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

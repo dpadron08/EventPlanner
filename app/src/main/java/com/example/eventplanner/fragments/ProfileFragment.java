@@ -205,6 +205,7 @@ public class ProfileFragment extends Fragment {
         ParseRelation<Event> relation = ParseUser.getCurrentUser().getRelation("subscriptions");
         ParseQuery<Event> query = relation.getQuery();
         query.include("author");
+        query.addDescendingOrder(Event.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
