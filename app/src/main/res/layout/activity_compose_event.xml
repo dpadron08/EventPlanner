@@ -93,4 +93,23 @@
         android:text="--/--/---- --:--"
         app:layout_constraintStart_toEndOf="@+id/btnPickTime"
         app:layout_constraintTop_toBottomOf="@+id/etRestrictions" />
+
+    <Button
+        android:id="@+id/btnPickLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Pick Location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPickDate" />
+
+    <TextView
+        android:id="@+id/tvLocationDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
+        android:text="Location: not set"
+        app:layout_constraintStart_toEndOf="@+id/btnPickLocation"
+        app:layout_constraintTop_toBottomOf="@+id/btnPickTime" />
 </androidx.constraintlayout.widget.ConstraintLayout>

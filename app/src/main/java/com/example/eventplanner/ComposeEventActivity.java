@@ -24,8 +24,14 @@ import android.widget.Toast;
 import com.example.eventplanner.fragments.DatePickerFragment;
 import com.example.eventplanner.fragments.TimePickerFragment;
 import com.example.eventplanner.models.Event;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -46,6 +52,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
 
     // PICK_PHOTO_CODE is a constant integer
     public final static int PICK_PHOTO_CODE = 1046;
+    public static final int PLACE_PICKER_REQUEST = 1;
 
     ImageView ivEventImage;
     Button btnAddPicture;
@@ -56,12 +63,16 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     Button btnPickDate;
     Button btnPickTime;
     TextView tvDateTime;
+    Button btnPickLocation;
+    TextView tvLocationDisplay;
 
     private File photoFile = null;
     Calendar calendar = Calendar.getInstance();
     Date date =  null;
     boolean timePicked = false;
     boolean datePicked = false;
+
+    LatLng eventLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +89,13 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickDate = findViewById(R.id.btnPickDate);
         btnPickTime = findViewById(R.id.btnPickTime);
         tvDateTime = findViewById(R.id.tvDateTime);
+        btnPickLocation = findViewById(R.id.btnPickLocation);
+        tvLocationDisplay = findViewById(R.id.tvLocationDisplay);
 
         ivEventImage.setImageResource(R.drawable.blankpfp);
+        eventLocation = null;
+        date = null;
+        photoFile = null;
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +135,20 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 showTimePickerDialog(view);
             }
         });
+
+        btnPickLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                try {
+                    startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user) {
@@ -135,6 +165,10 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         }
         if (photoFile != null) {
             event.setImage(new ParseFile(photoFile));
+        }
+        if (eventLocation != null) {
+            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude);
+            event.setLocation(parseGeoPoint);
         }
         event.saveInBackground(new SaveCallback() {
             @Override
@@ -193,6 +227,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((data != null) && requestCode == PICK_PHOTO_CODE) {
+            // TODO check if resultCode is OK
             Uri photoUri = data.getData();
 
             // Load the image located at photoUri into selectedImage
@@ -226,6 +261,15 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             // load selected image into a preview
             ivEventImage.setImageBitmap(selectedImage);
 
+        }
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode != RESULT_OK) {
+                return;
+            }
+            Place place = PlacePicker.getPlace(data, this);
+            eventLocation = place.getLatLng();
+            Toast.makeText(this, "Location Set!", Toast.LENGTH_SHORT).show();
+            tvLocationDisplay.setText("Location set!");
         }
 
     }

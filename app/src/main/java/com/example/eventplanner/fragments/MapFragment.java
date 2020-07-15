@@ -347,6 +347,7 @@ public class MapFragment extends Fragment {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        /*
         getFusedLocationProviderClient(getContext()).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
@@ -354,6 +355,8 @@ public class MapFragment extends Fragment {
                     }
                 },
                 Looper.myLooper());
+
+         */
     }
 
     public void onLocationChanged(Location location) {

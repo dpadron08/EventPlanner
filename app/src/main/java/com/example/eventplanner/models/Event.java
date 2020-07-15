@@ -67,7 +67,9 @@ public class Event extends com.parse.ParseObject {
     public ParseGeoPoint getLocation() {
         return getParseGeoPoint(KEY_LOCATION);
     }
-    // TODO set location
+    public void setLocation(ParseGeoPoint parseGeoPoint) {
+        put(KEY_LOCATION, parseGeoPoint);
+    }
 
     public ParseFile getImage() {
         return getParseFile(KEY_IMAGE);
