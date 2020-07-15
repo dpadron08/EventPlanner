@@ -163,28 +163,31 @@ public class MapFragment extends Fragment {
     }
 
     private void placePins() {
-        List<LatLng> listOfLatLngs = new ArrayList<>();
         for (Event e : allEvents) {
             if (e.getLocation() != null) {
-                listOfLatLngs.add(new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude()));
+                //listOfLatLngs.add(new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude()));
+                LatLng latLng = new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude());
+                // Define color of marker icon
+                BitmapDescriptor defaultMarker =
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                // Extract content from alert dialog
+
+                String title;
+                if (e.getTitle() != null && !e.getTitle().isEmpty()) {
+                    title = e.getTitle();
+                } else {
+                    title = "No title found";
+                }
+                String snippet = "My Snippet";
+                // Creates and adds marker to the map
+
+                Marker marker = map.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(title)
+                        .snippet(snippet)
+                        .icon(defaultMarker));
             }
         }
-        for (LatLng loc : listOfLatLngs) {
-            // Define color of marker icon
-            BitmapDescriptor defaultMarker =
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-            // Extract content from alert dialog
-            String title = "My title";
-            String snippet = "My Snippet";
-            // Creates and adds marker to the map
-
-            Marker marker = map.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .title(title)
-                    .snippet(snippet)
-                    .icon(defaultMarker));
-        }
-
     }
 
 
