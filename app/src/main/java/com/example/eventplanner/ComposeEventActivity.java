@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -42,7 +44,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -65,6 +66,8 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     TextView tvDateTime;
     Button btnPickLocation;
     TextView tvLocationDisplay;
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
     private File photoFile = null;
     Calendar calendar = Calendar.getInstance();
@@ -125,6 +128,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showDatePickerDialog(view);
             }
         });
@@ -149,9 +153,15 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 }
             }
         });
+
+
     }
 
     private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user) {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+            Log.i(TAG, "save event and return");
+        }
         final Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
@@ -173,6 +183,9 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 if (e != null) {
                     Log.e(TAG, "Error while saving event");
                     Toast.makeText(ComposeEventActivity.this, "Error while saving", Toast.LENGTH_SHORT).show();
@@ -310,5 +323,42 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         if (!datePicked) {
             Toast.makeText(this, "Please choose a date", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // for toolbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // for progress bar
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }

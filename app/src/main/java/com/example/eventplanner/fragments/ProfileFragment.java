@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -78,6 +81,8 @@ public class ProfileFragment extends Fragment {
     TextView tvInterests;
     Button btnAddProfilePicture;
 
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -108,6 +113,7 @@ public class ProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -201,6 +207,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void querySubscribedEvents() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         adapter.clear();
         ParseRelation<Event> relation = ParseUser.getCurrentUser().getRelation("subscriptions");
         ParseQuery<Event> query = relation.getQuery();
@@ -209,6 +218,9 @@ public class ProfileFragment extends Fragment {
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 if (e != null) {
                     Log.e(TAG, "Failed to query subscribed to events");
                     return;
@@ -267,6 +279,39 @@ public class ProfileFragment extends Fragment {
         user.put("profilePicture", new ParseFile(photoFile));
         user.saveInBackground();
         Toast.makeText(getContext(), "PFP saved!", Toast.LENGTH_SHORT).show();
+    }
+
+    // for toolbar
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        inflater.inflate(R.menu.menu_main, menu);
+
+        //return true;
+        //return super.onCreateOptionsMenu(menu);
+    }
+
+
+    // for progress bar
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 
 }

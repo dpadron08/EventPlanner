@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,6 +38,8 @@ import java.util.List;
  */
 public class FriendsFragment extends Fragment {
 
+    private static final String TAG = "FriendsFragment";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -45,6 +50,9 @@ public class FriendsFragment extends Fragment {
     List<ParseUser> allFriends;
     FriendsAdapter adapter;
     Button btnAddFriend;
+
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
 
     // TODO: Rename and change types of parameters
@@ -80,6 +88,7 @@ public class FriendsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -119,6 +128,9 @@ public class FriendsFragment extends Fragment {
     }
 
     private void queryFriends() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         adapter.clear();
         // specify what type of data we want to query
         ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
@@ -130,11 +142,47 @@ public class FriendsFragment extends Fragment {
                 allFriends.addAll(objects);
                 adapter.notifyDataSetChanged();
 
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 for (ParseUser a : allFriends) {
                     Log.i("FriendsFragment", "Friend :  " + a.getUsername());
                 }
 
             }
         });
+    }
+
+    // for toolbar
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        inflater.inflate(R.menu.menu_main, menu);
+
+        //return true;
+        //return super.onCreateOptionsMenu(menu);
+    }
+
+
+    // for progress bar
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }
