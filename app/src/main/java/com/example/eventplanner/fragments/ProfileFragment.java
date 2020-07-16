@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.eventplanner.LoginActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
@@ -80,6 +81,7 @@ public class ProfileFragment extends Fragment {
     TextView tvUsername;
     TextView tvInterests;
     Button btnAddProfilePicture;
+    Button btnLogout;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -132,6 +134,7 @@ public class ProfileFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvUsername);
         tvInterests = view.findViewById(R.id.tvInterests);
         btnAddProfilePicture = view.findViewById(R.id.btnAddProfilePicture);
+        btnLogout = view.findViewById(R.id.btnLogout);
         queryUserProfile(); // get user attributes and populate the views with data
 
 
@@ -148,6 +151,25 @@ public class ProfileFragment extends Fragment {
                 onPickPhoto(view);
             }
         });
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userLogout();
+            }
+        });
+    }
+
+    private void userLogout() {
+        ParseUser.logOut();
+        if (ParseUser.getCurrentUser() == null) {
+            Log.i(TAG, "Successfully logged out");
+        }
+        Intent intent = new Intent(getContext(), LoginActivity.class);
+        startActivity(intent);
+        getActivity().finish();
+
+
     }
 
     private void onPickPhoto(View view) {
