@@ -216,7 +216,8 @@ public class ProfileFragment extends Fragment {
                 }
                 // once user is found, populate the views with user data
                 tvUsername.setText(((ParseUser)object).getUsername());
-                tvInterests.setText(((ParseUser)object).getString("interests"));
+                String interests = "Interests: " + ((ParseUser)object).getString("interests");
+                tvInterests.setText(interests);
                 ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
                 if (image != null) {
                     Glide.with(getContext()).load(image.getUrl()).into(ivProfilePic);

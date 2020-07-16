@@ -17,6 +17,7 @@
             android:layout_height="120dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
@@ -28,6 +29,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="52dp"
             android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintStart_toEndOf="@+id/ivProfilePicture"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="ProfileUsername" />
@@ -71,5 +73,15 @@
             android:text="Log Out"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvMySubscriptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My subscriptions"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:layout_constraintBottom_toTopOf="@+id/rvEvents"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
