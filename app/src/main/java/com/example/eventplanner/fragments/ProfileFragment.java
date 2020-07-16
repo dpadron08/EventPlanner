@@ -216,7 +216,12 @@ public class ProfileFragment extends Fragment {
                 }
                 // once user is found, populate the views with user data
                 tvUsername.setText(((ParseUser)object).getUsername());
-                String interests = "Interests: " + ((ParseUser)object).getString("interests");
+                String interests;
+                if (((ParseUser)object).getString("interests") != null) {
+                    interests = "Interests: " + ((ParseUser)object).getString("interests");
+                } else {
+                    interests = "None";
+                }
                 tvInterests.setText(interests);
                 ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
                 if (image != null) {

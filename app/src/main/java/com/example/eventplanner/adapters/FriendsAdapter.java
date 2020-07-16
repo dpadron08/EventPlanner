@@ -74,7 +74,14 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
 
         public void bind(ParseUser user) {
             tvUsername.setText(user.getUsername());
-            tvInterests.setText(user.getString("interests"));
+
+            String interests;
+            if (user.getString("interests") != null) {
+                interests = "Interests: " + user.getString("interests");
+            } else {
+                interests = "None";
+            }
+            tvInterests.setText(interests);
 
             ParseFile image = user.getParseFile("profilePicture");
             if (image != null) {
