@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -48,11 +51,14 @@ public class TimelineFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     Button btnAddEvent;
-    
+
     // for recycler view list of events
     RecyclerView rvEvents;
     protected EventsAdapter adapter;
     protected List<Event> allEvents;
+
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
 
     // TODO: Rename and change types of parameters
@@ -88,6 +94,7 @@ public class TimelineFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -104,7 +111,7 @@ public class TimelineFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnAddEvent = view.findViewById(R.id.btnAddEvent);
-        
+
         rvEvents = view.findViewById(R.id.rvEvents);
         allEvents = new ArrayList<>();
         adapter = new EventsAdapter(getContext(), allEvents);
@@ -117,11 +124,16 @@ public class TimelineFragment extends Fragment {
                 goComposeEventActivity();
             }
         });
-        
+
+
+
         queryEvents();
     }
 
     private void queryEvents() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         adapter.clear();
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
         query.setLimit(20);
@@ -142,11 +154,13 @@ public class TimelineFragment extends Fragment {
                     Log.i(TAG, "Event title: " + event.getTitle() + "Description: " + event.getDescription()
                     + "image url: " + event.getImage().getUrl());
                 }
-
                  */
 
                 allEvents.addAll(objects);
                 adapter.notifyDataSetChanged();
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
 
             }
         });
@@ -188,5 +202,38 @@ public class TimelineFragment extends Fragment {
 
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    // for toolbar
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        inflater.inflate(R.menu.menu_main, menu);
+
+        //return true;
+        //return super.onCreateOptionsMenu(menu);
+    }
+
+
+    // for progress bar
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }
