@@ -59,10 +59,10 @@
 
         <Button
             android:id="@+id/btnAddProfilePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="46dp"
-            android:text="Edit Pic"
+            android:layout_width="54dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="32dp"
+            app:icon="@drawable/ic_baseline_edit_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivProfilePicture" />
 
@@ -83,5 +83,14 @@
             app:layout_constraintBottom_toTopOf="@+id/rvEvents"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnTakePicture"
+            android:layout_width="54dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="8dp"
+            app:icon="@drawable/ic_baseline_camera_alt_24"
+            app:layout_constraintStart_toEndOf="@+id/btnAddProfilePicture"
+            app:layout_constraintTop_toBottomOf="@+id/ivProfilePicture" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
