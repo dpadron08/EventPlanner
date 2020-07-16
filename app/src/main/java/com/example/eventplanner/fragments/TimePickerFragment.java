@@ -70,6 +70,11 @@ public class TimePickerFragment extends DialogFragment {
         return inflater.inflate(R.layout.fragment_time_picker, container, false);
     }
 
+    /**
+     * Create the dialog that allows user to pick a time for an event
+     * @param savedInstanceState
+     * @return Dialog to be used by activity
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current time as the default values for the picker

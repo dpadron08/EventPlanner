@@ -61,7 +61,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitle;
@@ -91,9 +90,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             tvDescription.setText(event.getDescription());
             tvAuthor.setText(event.getAuthor().getUsername());
 
+            // display Location if it exists
             if (event.getLocation() != null) {
-                tvLocation.setText(event.getLocation().toString()); // getting geo point
+                tvLocation.setText(event.getLocation().toString());
             }
+
+            // display datetime if it exists
             if (event.getDate() != null) {
                 String date = ((Date) event.getDate()).toString();
                 tvDate.setText(date); // get Datetime
@@ -103,11 +105,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
             ParseFile image = event.getImage();
             if (image != null) {
+                // display image if it exists
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             } else {
+                // else use blank placeholder
                 ivImage.setImageResource(R.drawable.blankpfp);
             }
 
+            // when user clicks on an event, this takes them to details view
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

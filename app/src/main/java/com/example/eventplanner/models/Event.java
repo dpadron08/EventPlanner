@@ -16,16 +16,16 @@ import java.util.Date;
 @ParseClassName("Event")
 public class Event extends com.parse.ParseObject {
 
+    /* Keys for getting custom attributes from Parse database */
     public static final String KEY_TITLE = "title";
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_AUTHOR = "author";
     public static final String KEY_DATE = "date";
-    //public static final String KEY_CREATED_AT = "createdAt"; // alrdy defined in superclass
     public static final String KEY_RESTRICTIONS = "restrictions";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IMAGE = "image";
 
-
+    // empty constructor for parceler library
     public Event() {}
 
     public String getTitle() {

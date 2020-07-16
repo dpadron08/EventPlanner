@@ -66,15 +66,16 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     TextView tvDateTime;
     Button btnPickLocation;
     TextView tvLocationDisplay;
+
     // for the progress loading action item
     MenuItem miActionProgressItem;
 
+    // for getting time, date, location, image for event
     private File photoFile = null;
     Calendar calendar = Calendar.getInstance();
     Date date =  null;
     boolean timePicked = false;
     boolean datePicked = false;
-
     LatLng eventLocation = null;
 
     @Override
@@ -105,6 +106,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             public void onClick(View view) {
                 if (etTitle.getText().toString().isEmpty() || etDescription.getText().toString().isEmpty()
                         || etRestrictions.getText().toString().isEmpty()) {
+                    // prevent user from not adding a title, description, or restriction
                     Toast.makeText(ComposeEventActivity.this, "Please add in all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -128,7 +130,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // launch date picker
                 showDatePickerDialog(view);
             }
         });
@@ -136,10 +138,12 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // launch time picker
                 showTimePickerDialog(view);
             }
         });
 
+        // launch location picker
         btnPickLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,6 +161,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
 
     }
 
+    // saving event to database
     private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user) {
         if (miActionProgressItem != null) {
             showProgressBar();
@@ -168,6 +173,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         event.setRestrictions(restrictions);
         event.setAuthor(user);
 
+        // only set datetime if both date and time were set
         if (datePicked && timePicked) {
             Date date = calendar.getTime();
             Log.i(TAG, "Date: "+date);
@@ -292,12 +298,15 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         DatePickerFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
+
+    // once date is set, adjust internal variables
     @Override
     public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, monthOfYear);
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         datePicked = true;
+        // tell user to pick both time and date
         if (timePicked && datePicked) {
             tvDateTime.setText(calendar.getTime().toString());
         }
@@ -311,12 +320,15 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         TimePickerFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
+
+    // once time set, adjust internal variables
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
-        //Log.i(TAG, "Calendar Day of month: "+ calendar.get(Calendar.DAY_OF_MONTH) + "Minute : " + calendar.get(Calendar.MINUTE));
         timePicked = true;
+
+        // tell user to pick both time and date
         if (timePicked && datePicked) {
             tvDateTime.setText(calendar.getTime().toString());
         }
@@ -325,7 +337,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         }
     }
 
-    // for toolbar
+    // for action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu, this adds items to the action bar if it is present
@@ -345,7 +357,6 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         if (miActionProgressItem != null) {
             hideProgressBar();
         }
-        Log.i(TAG, "Get here?");
 
         // return to finish
         return super.onPrepareOptionsMenu(menu);

@@ -34,8 +34,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     ImageView ivImage;
     RelativeLayout container;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

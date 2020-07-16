@@ -69,6 +69,11 @@ public class DatePickerFragment extends DialogFragment {
         return inflater.inflate(R.layout.fragment_date_picker, container, false);
     }
 
+    /**
+     * Create the dialog that allows user to pick scheduled date
+     * @param savedInstanceState
+     * @return Dialog to be opened by activity
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current time as the default values for the picker

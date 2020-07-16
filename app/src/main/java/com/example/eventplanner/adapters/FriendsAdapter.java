@@ -79,6 +79,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
             ParseFile image = user.getParseFile("profilePicture");
             if (image != null) {
                 Glide.with(context).load(image.getUrl()).into(ivProfilePicture);
+            } else {
+                // set blank profile picture if friend has no profile pic
+                ivProfilePicture.setImageResource(R.drawable.blankpfp);
             }
         }
     }

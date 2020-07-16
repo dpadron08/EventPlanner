@@ -111,7 +111,6 @@ public class FriendsFragment extends Fragment {
             }
         });
 
-
         rvFriends = view.findViewById(R.id.rvFriends);
         allFriends = new ArrayList<>();
         adapter = new FriendsAdapter(getContext(), allFriends);
@@ -123,10 +122,11 @@ public class FriendsFragment extends Fragment {
 
     private void goAddFriendActivity() {
         Intent intent = new Intent(getContext(), AddFriendActivity.class);
-        // will need to convert to startActivityForResult
+        // will need to convert to startActivityForResult when friend adding ability implemented
         startActivity(intent);
     }
 
+    // get friends from database
     private void queryFriends() {
         if (miActionProgressItem != null) {
             showProgressBar();
@@ -153,16 +153,12 @@ public class FriendsFragment extends Fragment {
         });
     }
 
-    // for toolbar
+    // for inflating our custom action bar with menu items
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu, this adds items to the action bar if it is present
         inflater.inflate(R.menu.menu_main, menu);
-
-        //return true;
-        //return super.onCreateOptionsMenu(menu);
     }
-
 
     // for progress bar
     @Override

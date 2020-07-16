@@ -182,7 +182,7 @@ public class ProfileFragment extends Fragment {
     }
 
 
-
+    // get user profile attributes
     private void queryUserProfile() {
         ParseUser currentUser = ParseUser.getCurrentUser();
         currentUser.fetchInBackground(new GetCallback<ParseObject>() {
@@ -192,6 +192,7 @@ public class ProfileFragment extends Fragment {
                     Log.i(TAG, "Failed to query current user");
                     return;
                 }
+                // once user is found, populate the views with user data
                 tvUsername.setText(((ParseUser)object).getUsername());
                 tvInterests.setText(((ParseUser)object).getString("interests"));
                 ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
@@ -206,6 +207,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    // get the events the user subscribed to
     private void querySubscribedEvents() {
         if (miActionProgressItem != null) {
             showProgressBar();
@@ -232,6 +234,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    // returning from getting a picture for profile
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -281,14 +284,11 @@ public class ProfileFragment extends Fragment {
         Toast.makeText(getContext(), "PFP saved!", Toast.LENGTH_SHORT).show();
     }
 
-    // for toolbar
+    // for inflating our action bar
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu, this adds items to the action bar if it is present
         inflater.inflate(R.menu.menu_main, menu);
-
-        //return true;
-        //return super.onCreateOptionsMenu(menu);
     }
 
 
@@ -299,7 +299,6 @@ public class ProfileFragment extends Fragment {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
         Log.i(TAG, "Get here?");
 
-        // return to finish
         super.onPrepareOptionsMenu(menu);
     }
 

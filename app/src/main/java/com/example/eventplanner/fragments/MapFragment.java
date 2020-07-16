@@ -139,6 +139,7 @@ public class MapFragment extends Fragment {
         queryEvents();
     }
 
+    // retrieve events so that we can place their location pins
     private void queryEvents() {
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
         query.findInBackground(new FindCallback<Event>() {
@@ -150,7 +151,6 @@ public class MapFragment extends Fragment {
                 }
 
                 // for debugging purposes let's print every event description to logcat
-
                 for (Event event : objects) {
                     if (event.getLocation() == null) {
                         continue;
@@ -168,12 +168,10 @@ public class MapFragment extends Fragment {
     private void placePins() {
         for (Event e : allEvents) {
             if (e.getLocation() != null) {
-                //listOfLatLngs.add(new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude()));
                 LatLng latLng = new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude());
                 // Define color of marker icon
                 BitmapDescriptor defaultMarker =
                         BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                // Extract content from alert dialog
 
                 String title;
                 if (e.getTitle() != null && !e.getTitle().isEmpty()) {
@@ -182,8 +180,8 @@ public class MapFragment extends Fragment {
                     title = "No title found";
                 }
                 String snippet = "My Snippet";
-                // Creates and adds marker to the map
 
+                // add marker at position latLng into mapp
                 Marker marker = map.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(title)
@@ -218,9 +216,7 @@ public class MapFragment extends Fragment {
         map = googleMap;
         if (googleMap != null) {
             // ... use map here
-            //MapFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
             MapFragmentPermissionsDispatcher.getMyLocationWithPermissionCheck(this);
-            //MapFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
             MapFragmentPermissionsDispatcher.startLocationUpdatesWithPermissionCheck(this);
         } else {
             Toast.makeText(getContext(), "Error - Map was null!!", Toast.LENGTH_SHORT).show();

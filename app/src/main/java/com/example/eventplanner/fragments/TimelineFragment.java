@@ -60,7 +60,6 @@ public class TimelineFragment extends Fragment {
     // for the progress loading action item
     MenuItem miActionProgressItem;
 
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -126,10 +125,10 @@ public class TimelineFragment extends Fragment {
         });
 
 
-
         queryEvents();
     }
 
+    // get all most recent 20 events and put on timeline
     private void queryEvents() {
         if (miActionProgressItem != null) {
             showProgressBar();
@@ -166,6 +165,7 @@ public class TimelineFragment extends Fragment {
         });
     }
 
+    // go to create a new event
     private void goComposeEventActivity() {
         Intent intent = new Intent(getContext(), ComposeEventActivity.class);
         // will need to convert to startActivityforResult
@@ -177,6 +177,7 @@ public class TimelineFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 20  && resultCode == Activity.RESULT_OK) {
             final Event event = Parcels.unwrap(data.getParcelableExtra("event"));
+            // add the new event at the top of the timeline
             allEvents.add(0, event);
             adapter.notifyItemInserted(0);
             rvEvents.smoothScrollToPosition(0);
@@ -209,9 +210,6 @@ public class TimelineFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu, this adds items to the action bar if it is present
         inflater.inflate(R.menu.menu_main, menu);
-
-        //return true;
-        //return super.onCreateOptionsMenu(menu);
     }
 
 
@@ -222,7 +220,6 @@ public class TimelineFragment extends Fragment {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
         Log.i(TAG, "Get here?");
 
-        // return to finish
         super.onPrepareOptionsMenu(menu);
     }
 
