@@ -23,6 +23,7 @@ import com.example.eventplanner.ComposeEventActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -51,6 +52,7 @@ public class TimelineFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     Button btnAddEvent;
+    FloatingActionButton btnFloatingAdd;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -110,6 +112,7 @@ public class TimelineFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnAddEvent = view.findViewById(R.id.btnAddEvent);
+        btnFloatingAdd = view.findViewById(R.id.btnFloatingAdd);
 
         rvEvents = view.findViewById(R.id.rvEvents);
         allEvents = new ArrayList<>();
@@ -118,6 +121,12 @@ public class TimelineFragment extends Fragment {
         rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goComposeEventActivity();
+            }
+        });
+        btnFloatingAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goComposeEventActivity();
