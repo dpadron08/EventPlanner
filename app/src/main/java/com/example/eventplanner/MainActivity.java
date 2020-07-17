@@ -49,16 +49,19 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_timeline:
                         //fragment = fragment1;
                         fragment = new TimelineFragment();
+                        setTitle("My Timeline");
                         newPosition = 1;
                         break;
                     case R.id.action_friends:
                         //fragment = fragment2;
                         fragment = new FriendsFragment();
+                        setTitle("Friends");
                         newPosition = 2;
                         break;
                     case R.id.action_profile:
                         //fragment = fragment3;
                         fragment = new ProfileFragment();
+                        setTitle("Profile");
                         newPosition = 3;
                         break;
                     case R.id.action_map:
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                         //fragment = fragment4;
                         //fragment = new MapFragment();
                         fragment = theMap;
+                        setTitle("Map");
                         newPosition = 4;
                         break;
                 }
