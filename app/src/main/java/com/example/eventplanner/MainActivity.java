@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
     private BottomNavigationView bottomNavigationView;
-
+    int startingPosition = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,36 +35,48 @@ public class MainActivity extends AppCompatActivity {
 
         final Fragment theMap = new MapFragment();
 
+        //load the first fragment
+        Fragment firstFragment = new TimelineFragment();
+        fragmentManager.beginTransaction().replace(R.id.flContainer, firstFragment).commit();
+
         // add ability to switch between fragments
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment fragment;
+                int newPosition = 1;
                 switch (menuItem.getItemId()) {
                     case R.id.action_timeline:
                         //fragment = fragment1;
                         fragment = new TimelineFragment();
-                        //Toast.makeText(MainActivity.this, "Timeline!", Toast.LENGTH_SHORT).show();
+                        newPosition = 1;
                         break;
                     case R.id.action_friends:
                         //fragment = fragment2;
                         fragment = new FriendsFragment();
-                        //Toast.makeText(MainActivity.this, "Friends!", Toast.LENGTH_SHORT).show();
+                        newPosition = 2;
                         break;
                     case R.id.action_profile:
                         //fragment = fragment3;
                         fragment = new ProfileFragment();
-                        //Toast.makeText(MainActivity.this, "Profile", Toast.LENGTH_SHORT).show();
+                        newPosition = 3;
                         break;
                     case R.id.action_map:
-                        //Toast.makeText(MainActivity.this, "Map", Toast.LENGTH_SHORT).show();
                     default:
                         //fragment = fragment4;
                         //fragment = new MapFragment();
                         fragment = theMap;
+                        newPosition = 4;
                         break;
                 }
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                // old way to begin transaction
+                //fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+
+                // custom animation with only one left to right animation
+                //fragmentManager.beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.flContainer, fragment).commit();
+
+                // animations using the correct swiping to/from left/right
+                doAnimation(fragmentManager, fragment, newPosition);
                 return true;
             }
         });
@@ -72,5 +84,22 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.action_timeline);
     }
 
+    private void doAnimation(FragmentManager fragmentManager, Fragment fragment, int newPosition) {
+        if(fragment != null) {
+            if(startingPosition > newPosition) {
+                fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right )
+                        .replace(R.id.flContainer, fragment)
+                        .commit();
+            }
+            if(startingPosition < newPosition) {
+                fragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                        .replace(R.id.flContainer, fragment)
+                        .commit();
+            }
+            startingPosition = newPosition;
+        }
+    }
 
 }
