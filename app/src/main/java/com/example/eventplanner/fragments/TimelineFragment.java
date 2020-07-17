@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -181,7 +183,7 @@ public class TimelineFragment extends Fragment {
     // go to create a new event
     private void goComposeEventActivity() {
         Intent intent = new Intent(getContext(), ComposeEventActivity.class);
-        // will need to convert to startActivityforResult
+
         startActivityForResult(intent, 20);
     }
 

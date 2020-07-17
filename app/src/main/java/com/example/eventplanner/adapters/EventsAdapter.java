@@ -65,44 +65,48 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitle;
-        TextView tvDescription;
+        //TextView tvDescription;
         TextView tvAuthor;
         TextView tvLocation;
         TextView tvDate;
-        TextView tvRestrictions;
+        //TextView tvRestrictions;
         ImageView ivImage;
         ConstraintLayout container;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvDescription = itemView.findViewById(R.id.tvDescription);
+            //tvDescription = itemView.findViewById(R.id.tvDescription);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvLocation = itemView.findViewById(R.id.tvLocation);
             tvDate = itemView.findViewById(R.id.tvDate);
-            tvRestrictions = itemView.findViewById(R.id.tvRestrictions);
+            //tvRestrictions = itemView.findViewById(R.id.tvRestrictions);
             ivImage = itemView.findViewById(R.id.ivImage);
             container = itemView.findViewById(R.id.container);
 
         }
 
         public void bind(final Event event) {
-            tvTitle.setText(event.getTitle());
-            tvDescription.setText(event.getDescription());
-            tvAuthor.setText(event.getAuthor().getUsername());
+            String title = event.getTitle();
+            tvTitle.setText(title);
+            //tvDescription.setText(event.getDescription());
+
+            String author = "By: " + event.getAuthor().getUsername();
+            tvAuthor.setText(author);
 
             // display Location if it exists
             if (event.getLocation() != null) {
-                tvLocation.setText(event.getLocation().toString());
+                String locationStr = "Where: " + event.getLocation().toString();
+                tvLocation.setText(locationStr);
             }
 
             // display datetime if it exists
             if (event.getDate() != null) {
-                String date = ((Date) event.getDate()).toString();
+                String date = "When: " + ((Date) event.getDate()).toString();
                 tvDate.setText(date); // get Datetime
             }
 
-            tvRestrictions.setText(event.getRestrictions());
+            //tvRestrictions.setText(event.getRestrictions());
 
             ParseFile image = event.getImage();
             if (image != null) {
