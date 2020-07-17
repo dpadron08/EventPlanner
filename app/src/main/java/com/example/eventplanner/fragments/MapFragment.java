@@ -179,13 +179,19 @@ public class MapFragment extends Fragment {
                 } else {
                     title = "No title found";
                 }
-                String snippet = "My Snippet";
+
+                String description;
+                if (e.getDescription() != null && !e.getDescription().isEmpty()) {
+                    description = e.getDescription();
+                } else {
+                    description = "No description found";
+                }
 
                 // add marker at position latLng into mapp
                 Marker marker = map.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(title)
-                        .snippet(snippet)
+                        .snippet(description)
                         .icon(defaultMarker));
             }
         }
