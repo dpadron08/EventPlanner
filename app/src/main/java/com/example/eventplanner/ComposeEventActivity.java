@@ -208,7 +208,9 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 Intent intent = new Intent();
                 intent.putExtra("event", Parcels.wrap(event));
                 setResult(RESULT_OK, intent);
+
                 finish();  // closes the activity, pass data to parent
+                overridePendingTransition(R.anim.no_animation, R.anim.slide_down_back);
             }
         });
 

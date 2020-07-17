@@ -184,7 +184,9 @@ public class TimelineFragment extends Fragment {
     private void goComposeEventActivity() {
         Intent intent = new Intent(getContext(), ComposeEventActivity.class);
 
+
         startActivityForResult(intent, 20);
+        getActivity().overridePendingTransition(R.anim.right_bottom_up, R.anim.slide_down_back);
     }
 
     // an event was created
