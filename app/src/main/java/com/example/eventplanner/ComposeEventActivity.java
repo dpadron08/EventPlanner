@@ -1,6 +1,7 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -31,6 +32,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -66,6 +68,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     TextView tvDateTime;
     Button btnPickLocation;
     TextView tvLocationDisplay;
+    ConstraintLayout constraintLayout;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -95,6 +98,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         tvDateTime = findViewById(R.id.tvDateTime);
         btnPickLocation = findViewById(R.id.btnPickLocation);
         tvLocationDisplay = findViewById(R.id.tvLocationDisplay);
+        constraintLayout = findViewById(R.id.constraintLayout);
 
         ivEventImage.setImageResource(R.drawable.blankpfp);
         eventLocation = null;
@@ -107,7 +111,9 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 if (etTitle.getText().toString().isEmpty() || etDescription.getText().toString().isEmpty()
                         || etRestrictions.getText().toString().isEmpty()) {
                     // prevent user from not adding a title, description, or restriction
-                    Toast.makeText(ComposeEventActivity.this, "Please add in all fields", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ComposeEventActivity.this, "Please add in all fields", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(constraintLayout, "Please fill in all fields", Snackbar.LENGTH_SHORT)
+                            .show();
                     return;
                 }
 
@@ -196,8 +202,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                     Log.e(TAG, "Error while saving event");
                     Toast.makeText(ComposeEventActivity.this, "Error while saving", Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(ComposeEventActivity.this, "Post saved successfully", Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(ComposeEventActivity.this, "Post saved successfully", Toast.LENGTH_SHORT).show();
 
                 // return to old context with this new data
                 Intent intent = new Intent();
@@ -287,7 +292,9 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             }
             Place place = PlacePicker.getPlace(data, this);
             eventLocation = place.getLatLng();
-            Toast.makeText(this, "Location Set!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Location Set!", Toast.LENGTH_SHORT).show();
+            Snackbar.make(constraintLayout, "Location set", Snackbar.LENGTH_SHORT)
+                    .show();
             tvLocationDisplay.setText("Location set!");
         }
 
@@ -311,7 +318,8 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             tvDateTime.setText(calendar.getTime().toString());
         }
         if (!timePicked) {
-            Toast.makeText(this, "Please choose a time", Toast.LENGTH_SHORT).show();
+            Snackbar.make(constraintLayout, "Please pick a time", Snackbar.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -333,7 +341,8 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             tvDateTime.setText(calendar.getTime().toString());
         }
         if (!datePicked) {
-            Toast.makeText(this, "Please choose a date", Toast.LENGTH_SHORT).show();
+            Snackbar.make(constraintLayout, "Please choose a date", Snackbar.LENGTH_SHORT)
+                    .show();
         }
     }
 

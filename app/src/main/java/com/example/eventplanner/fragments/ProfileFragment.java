@@ -35,6 +35,7 @@ import com.example.eventplanner.LoginActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -386,7 +387,7 @@ public class ProfileFragment extends Fragment {
                 saveProfilePic();
 
             } else { // Result was a failure
-                Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -404,7 +405,8 @@ public class ProfileFragment extends Fragment {
         ParseUser user = ParseUser.getCurrentUser();
         user.put("profilePicture", new ParseFile(photoFile));
         user.saveInBackground();
-        Toast.makeText(getContext(), "PFP saved!", Toast.LENGTH_SHORT).show();
+        Snackbar.make(rvEvents, "Profile picture saved", Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     // for inflating our action bar
@@ -420,7 +422,6 @@ public class ProfileFragment extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        Log.i(TAG, "Get here?");
 
         super.onPrepareOptionsMenu(menu);
     }

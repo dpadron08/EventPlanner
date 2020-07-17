@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -53,6 +55,7 @@ public class TimelineFragment extends Fragment {
 
     Button btnAddEvent;
     FloatingActionButton btnFloatingAdd;
+    ConstraintLayout constraintLayout;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -113,6 +116,7 @@ public class TimelineFragment extends Fragment {
 
         btnAddEvent = view.findViewById(R.id.btnAddEvent);
         btnFloatingAdd = view.findViewById(R.id.btnFloatingAdd);
+        constraintLayout = view.findViewById(R.id.constraintLayout);
 
         rvEvents = view.findViewById(R.id.rvEvents);
         allEvents = new ArrayList<>();
@@ -190,6 +194,9 @@ public class TimelineFragment extends Fragment {
             allEvents.add(0, event);
             adapter.notifyItemInserted(0);
             rvEvents.smoothScrollToPosition(0);
+
+            Snackbar.make(constraintLayout, "Event saved successfully", Snackbar.LENGTH_SHORT)
+                    .show();
 
             // add newly created event to list of events the user is subscribed to
             final ParseUser user = ParseUser.getCurrentUser();

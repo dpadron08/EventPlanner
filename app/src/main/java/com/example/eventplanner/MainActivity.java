@@ -44,20 +44,20 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_timeline:
                         //fragment = fragment1;
                         fragment = new TimelineFragment();
-                        Toast.makeText(MainActivity.this, "Timeline!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Timeline!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_friends:
                         //fragment = fragment2;
                         fragment = new FriendsFragment();
-                        Toast.makeText(MainActivity.this, "Friends!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Friends!", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_profile:
                         //fragment = fragment3;
                         fragment = new ProfileFragment();
-                        Toast.makeText(MainActivity.this, "Profile", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Profile", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_map:
-                        Toast.makeText(MainActivity.this, "Map", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "Map", Toast.LENGTH_SHORT).show();
                     default:
                         //fragment = fragment4;
                         //fragment = new MapFragment();

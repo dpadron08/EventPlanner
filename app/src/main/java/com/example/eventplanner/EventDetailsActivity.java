@@ -1,6 +1,7 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -32,7 +33,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     TextView tvDate;
     TextView tvRestrictions;
     ImageView ivImage;
-    RelativeLayout container;
+    ConstraintLayout container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
