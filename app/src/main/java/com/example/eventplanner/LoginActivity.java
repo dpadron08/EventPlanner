@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -22,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private Button btnSignup;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnSignup = findViewById(R.id.btnSignup);
+        linearLayout = findViewById(R.id.linearLayout);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +70,18 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Unable to sign in user");
+                    Log.e(TAG, "Unable to sign in user"+ e.getCode());
+                    switch (e.getCode()) {
+
+                        case ParseException.USERNAME_TAKEN:
+                            Snackbar.make(linearLayout, "Username is taken", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
+                        default:
+                            Snackbar.make(linearLayout, "Error signing up. Please restart app", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
+                    }
                     return;
                 }
                 goMainActivity();
@@ -81,6 +96,26 @@ public class LoginActivity extends AppCompatActivity {
                 if (e != null) {
                     Log.e(TAG, "Issue with login ", e);
                     // TODO: better error handling
+
+                    switch (e.getCode()) {
+                        case ParseException.PASSWORD_MISSING:
+                        case ParseException.USERNAME_MISSING:
+                            Snackbar.make(linearLayout, "Username or password is missing", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
+
+                        case ParseException.OBJECT_NOT_FOUND:
+                            Snackbar.make(linearLayout, "Invalid username/password", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
+                        case ParseException.USERNAME_TAKEN:
+                            Snackbar.make(linearLayout, "Username is taken", Snackbar.LENGTH_SHORT)
+                                    .show();
+                        default:
+                            Snackbar.make(linearLayout, "Error logging in. Please restart app", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
+                    }
                     return;
                 }
 

@@ -8,6 +8,7 @@
     android:layout_margin="16dp"
     android:orientation="vertical"
     tools:context=".LoginActivity"
+    android:id="@+id/linearLayout"
     >
 
     <EditText
