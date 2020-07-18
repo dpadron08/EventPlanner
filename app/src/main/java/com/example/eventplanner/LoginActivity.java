@@ -70,15 +70,21 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Unable to sign in user"+ e.getCode());
+                    Log.e(TAG, "Unable to sign in user. Error: " + e.getCode(), e);
                     switch (e.getCode()) {
+                        case ParseException.PASSWORD_MISSING:
+                        case ParseException.USERNAME_MISSING:
+                            Snackbar.make(linearLayout, "Username or password is missing", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            break;
 
                         case ParseException.USERNAME_TAKEN:
                             Snackbar.make(linearLayout, "Username is taken", Snackbar.LENGTH_SHORT)
                                     .show();
                             break;
+
                         default:
-                            Snackbar.make(linearLayout, "Error signing up. Please restart app", Snackbar.LENGTH_SHORT)
+                            Snackbar.make(linearLayout, "Error signing up", Snackbar.LENGTH_SHORT)
                                     .show();
                             break;
                     }
