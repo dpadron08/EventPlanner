@@ -138,6 +138,9 @@ public class FriendsFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Failed to query friends list");
+                }
                 allFriends.clear();
                 allFriends.addAll(objects);
                 adapter.notifyDataSetChanged();
