@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -84,6 +85,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         ConstraintLayout container;
         MaterialCardView cardView;
 
+        TextView tvCapacity;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
@@ -95,6 +98,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             ivImage = itemView.findViewById(R.id.ivImage);
             container = itemView.findViewById(R.id.container);
             cardView = itemView.findViewById(R.id.cardView);
+            tvCapacity = itemView.findViewById(R.id.tvCapacity);
         }
 
         public void bind(final Event event) {
@@ -146,7 +150,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 }
             });
 
-            // determine if user is subscribed to this event, if not,
+            // draw colored borders depending if users are subscribed to event
             styleHighlight(event);
         }
 
@@ -200,18 +204,29 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     // once subscribers for event are found,
+
                     /*
                     for (ParseUser u : objects) {
                         Log.i(TAG, "Username subscribed: "+ u.getUsername());
                     }
-                    */
+                     */
+
                     cardView.setStrokeWidth(0);
                     for (ParseUser subscriber : objects) {
                         if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
                             cardView.setStrokeWidth(4);
-                            return;
+                            break;
                         }
                     }
+
+                    String capacity;
+                    if (event.getCapacity() > 0) {
+                        capacity = objects.size() + "/" + event.getCapacity();
+                    } else {
+                        capacity = "No capacity";
+                    }
+                    tvCapacity.setText(capacity);
+
                 }
             });
         }
