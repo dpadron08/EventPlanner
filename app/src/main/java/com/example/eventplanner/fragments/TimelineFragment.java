@@ -150,7 +150,7 @@ public class TimelineFragment extends Fragment {
         }
         adapter.clear();
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
-        query.setLimit(20);
+        //query.setLimit(20);
         query.include(Event.KEY_AUTHOR);
         // order posts by creation date (newest first)
         query.addDescendingOrder(Event.KEY_CREATED_AT);

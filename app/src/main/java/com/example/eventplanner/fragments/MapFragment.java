@@ -47,6 +47,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,18 +162,49 @@ public class MapFragment extends Fragment {
 
                 allEvents.clear();
                 allEvents.addAll(objects);
-                placePins();
+
+                // query events that the user subscribed to
+                ParseRelation<Event> relation = ParseUser.getCurrentUser().getRelation("subscriptions");
+                ParseQuery<Event> query = relation.getQuery();
+                query.include("author");
+                query.findInBackground(new FindCallback<Event>() {
+                    @Override
+                    public void done(List<Event> objects, ParseException e) {
+                        // TODO add progress bar to this query
+
+                        if (e != null) {
+                            Log.e(TAG, "Failed to query subscribed to events");
+                            return;
+                        }
+                        placePins(objects);
+                    }
+                });
             }
         });
     }
 
-    private void placePins() {
+    private void placePins(List<Event> subscribedEvents) {
         for (Event e : allEvents) {
             if (e.getLocation() != null) {
                 LatLng latLng = new LatLng(e.getLocation().getLatitude(), e.getLocation().getLongitude());
+
                 // Define color of marker icon
-                BitmapDescriptor defaultMarker =
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                BitmapDescriptor defaultMarker;
+
+                //if this event is subscribed to, change the color of the pin
+                boolean isSubscribedTo = false;
+                for (Event subscribedEvent : subscribedEvents) {
+                    if ( e.getObjectId().equals(subscribedEvent.getObjectId()) ) {
+                        isSubscribedTo = true;
+                        break;
+                    }
+                }
+                
+                if (isSubscribedTo) {
+                    defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                } else {
+                    defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                }
 
                 String title;
                 if (e.getTitle() != null && !e.getTitle().isEmpty()) {
@@ -195,6 +228,7 @@ public class MapFragment extends Fragment {
                         .icon(defaultMarker));
             }
         }
+
     }
 
 
