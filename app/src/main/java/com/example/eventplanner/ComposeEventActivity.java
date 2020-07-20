@@ -62,6 +62,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     EditText etTitle;
     EditText etDescription;
     EditText etRestrictions;
+    EditText etCapacity;
     Button btnSubmit;
     Button btnPickDate;
     Button btnPickTime;
@@ -92,6 +93,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         etRestrictions = findViewById(R.id.etRestrictions);
+        etCapacity = findViewById(R.id.etCapacity);
         btnSubmit = findViewById(R.id.btnSubmit);
         btnPickDate = findViewById(R.id.btnPickDate);
         btnPickTime = findViewById(R.id.btnPickTime);
@@ -109,7 +111,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             @Override
             public void onClick(View view) {
                 if (etTitle.getText().toString().isEmpty() || etDescription.getText().toString().isEmpty()
-                        || etRestrictions.getText().toString().isEmpty()) {
+                        || etRestrictions.getText().toString().isEmpty() || etCapacity.getText().toString().isEmpty()) {
                     // prevent user from not adding a title, description, or restriction
                     //Toast.makeText(ComposeEventActivity.this, "Please add in all fields", Toast.LENGTH_SHORT).show();
                     Snackbar.make(constraintLayout, "Please fill in all fields", Snackbar.LENGTH_SHORT)
@@ -119,7 +121,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
 
                 // create the new event and return to old activity
                 saveEventAndReturn(etTitle.getText().toString(), etDescription.getText().toString(), etRestrictions.getText().toString(),
-                        ParseUser.getCurrentUser());
+                        ParseUser.getCurrentUser(), Integer.parseInt(etCapacity.getText().toString()));
 
 
             }
@@ -168,7 +170,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     }
 
     // saving event to database
-    private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user) {
+    private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user, int capacity) {
         if (miActionProgressItem != null) {
             showProgressBar();
             Log.i(TAG, "save event and return");
@@ -178,6 +180,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         event.setDescription(description);
         event.setRestrictions(restrictions);
         event.setAuthor(user);
+        event.setCapacity(capacity);
 
         // only set datetime if both date and time were set
         if (datePicked && timePicked) {

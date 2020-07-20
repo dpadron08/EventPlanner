@@ -24,6 +24,7 @@ public class Event extends com.parse.ParseObject {
     public static final String KEY_RESTRICTIONS = "restrictions";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IMAGE = "image";
+    public static final String KEY_CAPACITY = "capacity";
 
     // empty constructor for parceler library
     public Event() {}
@@ -77,5 +78,12 @@ public class Event extends com.parse.ParseObject {
 
     public void setImage(ParseFile parseFile) {
         put(KEY_IMAGE, parseFile);
+    }
+
+    public int getCapacity() {
+        return getInt(KEY_CAPACITY);
+    }
+    public void setCapacity(int capacity) {
+        put(KEY_CAPACITY, capacity);
     }
 }
