@@ -192,6 +192,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             ParseGeoPoint parseGeoPoint = new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude);
             event.setLocation(parseGeoPoint);
         }
+        event.getRelation("subscribers").add(ParseUser.getCurrentUser());
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

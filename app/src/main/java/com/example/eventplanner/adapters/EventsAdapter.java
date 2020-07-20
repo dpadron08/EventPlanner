@@ -2,6 +2,7 @@ package com.example.eventplanner.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,14 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.EventDetailsActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.card.MaterialCardView;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 import org.w3c.dom.Text;
@@ -64,6 +72,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        private static final String TAG = "EventsAdapterViewHolder";
         TextView tvTitle;
         //TextView tvDescription;
         TextView tvAuthor;
@@ -72,6 +81,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         //TextView tvRestrictions;
         ImageView ivImage;
         ConstraintLayout container;
+        MaterialCardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,7 +93,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             //tvRestrictions = itemView.findViewById(R.id.tvRestrictions);
             ivImage = itemView.findViewById(R.id.ivImage);
             container = itemView.findViewById(R.id.container);
-
+            cardView = itemView.findViewById(R.id.cardView);
         }
 
         public void bind(final Event event) {
@@ -127,6 +137,39 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 }
             });
 
+            container.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    return false;
+                }
+            });
+
+            // determine if user is subscribed to this event, if not,
+            styleHighlight(event);
+        }
+
+        public void styleHighlight(final Event event) {
+            ParseRelation<ParseUser> relation = event.getRelation("subscribers");
+            ParseQuery<ParseUser> query = relation.getQuery();
+
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    // once subscribers for event are found,
+                    /*
+                    for (ParseUser u : objects) {
+                        Log.i(TAG, "Username subscribed: "+ u.getUsername());
+                    }
+                    */
+                    cardView.setStrokeWidth(0);
+                    for (ParseUser subscriber : objects) {
+                        if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                            cardView.setStrokeWidth(4);
+                            return;
+                        }
+                    }
+                }
+            });
         }
     }
 }
