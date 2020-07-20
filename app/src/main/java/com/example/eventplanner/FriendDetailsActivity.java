@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,6 +40,9 @@ public class FriendDetailsActivity extends AppCompatActivity {
     protected EventsAdapter adapter;
     protected List<Event> allEvents;
 
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +72,9 @@ public class FriendDetailsActivity extends AppCompatActivity {
     }
 
     private void queryFriendSubscribedEvents() {
-        /*
         if (miActionProgressItem != null) {
             showProgressBar();
         }
-        */
 
         adapter.clear();
         ParseRelation<Event> relation = friendUser.getRelation("subscriptions");
@@ -81,11 +84,9 @@ public class FriendDetailsActivity extends AppCompatActivity {
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
-
-                /*if (miActionProgressItem != null) {
+                if (miActionProgressItem != null) {
                     hideProgressBar();
                 }
-                */
 
                 if (e != null) {
                     Log.e(TAG, "Failed to query subscribed to events");
@@ -96,5 +97,42 @@ public class FriendDetailsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    // for toolbar
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // for progress bar
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }
