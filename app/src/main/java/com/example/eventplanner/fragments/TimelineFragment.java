@@ -139,7 +139,6 @@ public class TimelineFragment extends Fragment {
             }
         });
 
-
         queryEvents();
     }
 
@@ -183,7 +182,6 @@ public class TimelineFragment extends Fragment {
     // go to create a new event
     private void goComposeEventActivity() {
         Intent intent = new Intent(getContext(), ComposeEventActivity.class);
-
 
         startActivityForResult(intent, 20);
         getActivity().overridePendingTransition(R.anim.right_bottom_up, R.anim.slide_down_back);
