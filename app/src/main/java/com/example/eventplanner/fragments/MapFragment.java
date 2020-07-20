@@ -199,7 +199,7 @@ public class MapFragment extends Fragment {
                         break;
                     }
                 }
-                
+
                 if (isSubscribedTo) {
                     defaultMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
                 } else {
@@ -215,7 +215,7 @@ public class MapFragment extends Fragment {
 
                 String description;
                 if (e.getDescription() != null && !e.getDescription().isEmpty()) {
-                    description = e.getDescription();
+                    description = "Info: " + e.getDescription() + " at: " + e.getDate();
                 } else {
                     description = "No description found";
                 }
