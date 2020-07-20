@@ -19,6 +19,7 @@ import com.example.eventplanner.EventDetailsActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -140,12 +141,55 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             container.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    return false;
+                    toggleSubscription(event);
+                    return true;
                 }
             });
 
             // determine if user is subscribed to this event, if not,
             styleHighlight(event);
+        }
+
+        private void toggleSubscription(final Event event) {
+            // change the subscription status of this event for the user
+            ParseRelation<ParseUser> relation = event.getRelation("subscribers");
+            ParseQuery<ParseUser> query = relation.getQuery();
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Unable to retrieve subscribers for event when toggling subscription", e);
+                        return;
+                    }
+
+                    boolean isUserSubscribed = false;
+                    for (ParseUser subscriber : objects) {
+                        if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                            isUserSubscribed = true;
+                            break;
+                        }
+                    }
+                    if (isUserSubscribed) {
+                        // unsubscribe and change border color
+                        event.getRelation("subscribers").remove(ParseUser.getCurrentUser());
+                        ParseUser.getCurrentUser().getRelation("subscriptions").remove(event);
+                        cardView.setStrokeWidth(0);
+                        Snackbar.make(container, "Unsubscribed!", Snackbar.LENGTH_SHORT)
+                                .show();
+
+                    } else {
+                        // subscribe and change border color
+                        event.getRelation("subscribers").add(ParseUser.getCurrentUser());
+                        ParseUser.getCurrentUser().getRelation("subscriptions").add(event);
+                        cardView.setStrokeWidth(4);
+                        Snackbar.make(container, "Subscribed!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    event.saveInBackground();
+                    ParseUser.getCurrentUser().saveInBackground();
+
+                }
+            });
         }
 
         public void styleHighlight(final Event event) {
