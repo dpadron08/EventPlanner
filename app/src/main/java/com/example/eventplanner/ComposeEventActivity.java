@@ -2,17 +2,20 @@ package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.FileProvider;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -60,9 +63,12 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     // PICK_PHOTO_CODE is a constant integer
     public final static int PICK_PHOTO_CODE = 1046;
     public static final int PLACE_PICKER_REQUEST = 1;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
+    String photoFileNameWithCamera = "photo2";
 
     ImageView ivEventImage;
     Button btnAddPicture;
+    Button btnTakePicture;
     EditText etTitle;
     EditText etDescription;
     EditText etRestrictions;
@@ -94,6 +100,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         // find views
         ivEventImage = findViewById(R.id.ivEventImage);
         btnAddPicture = findViewById(R.id.btnAddPicture);
+        btnTakePicture = findViewById(R.id.btnTakePicture);
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         etRestrictions = findViewById(R.id.etRestrictions);
@@ -136,6 +143,12 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             public void onClick(View view) {
                 // launch gallery view
                 onPickPhoto(view);
+            }
+        });
+        btnTakePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCamera();
             }
         });
 
@@ -309,6 +322,43 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             tvLocationDisplay.setText(locationStr);
         }
 
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // by this point we have the camera photo on disk
+                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                // RESIZE BITMAP, see section below
+                Bitmap bitmapScaled = scaleToFitHeight(takenImage, 200);
+
+                /* Without resizing
+                // Load the taken image into a preview
+                ivPostImage.setImageBitmap(takenImage);
+                 */
+
+                // Write the smaller bitmap back to disk
+                // Configure byte output stream
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                // Compress the image further
+                bitmapScaled.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+                // Create a new file for the resized bitmap (`getPhotoFileUri` defined above)
+                File resizedFile = getPhotoFileUri(photoFileNameWithCamera + "_resized");
+                try {
+                    resizedFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(resizedFile);
+                    // Write the bytes of the bitmap to file
+                    fos.write(bytes.toByteArray());
+                    fos.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Problem writing to disk");
+                }
+
+                ivEventImage.setImageBitmap(bitmapScaled);
+                photoFile = resizedFile;
+
+            } else { // Result was a failure
+                Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     // attach to an onclick handler to show the date picker
@@ -403,5 +453,51 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             return "No address found";
         }
         return addresses.get(0).getAddressLine(0);
+    }
+
+    /* Launching camera */
+    private void launchCamera() {
+        photoFile = null;
+        // create Intent to take a picture and return control to the calling application
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Create a File reference for future access
+        photoFile = getPhotoFileUri(photoFileNameWithCamera);
+
+        // wrap File object into a content provider
+        // required for API >= 24
+        // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
+        Uri fileProvider = FileProvider.getUriForFile(this, "com.example.fileproviderAnother", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        if (intent.resolveActivity(this.getPackageManager()) != null) {
+            // Start the image capture intent to take photo
+            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
+    private File getPhotoFileUri(String fileName) {
+        // Get safe storage directory for photos
+        // Use `getExternalFilesDir` on Context to access package-specific directories.
+        // This way, we don't need to request external read/write runtime permissions.
+        File mediaStorageDir = new File(this.getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
+        // Return the file target for the photo based on filename
+        File file = new File(mediaStorageDir.getPath() + File.separator + fileName);
+        return file;
+    }
+
+    // Scale and maintain aspect ratio given a desired height
+    // BitmapScaler.scaleToFitHeight(bitmap, 100);
+    public static Bitmap scaleToFitHeight(Bitmap b, int height)
+    {
+        float factor = height / (float) b.getHeight();
+        return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
     }
 }
