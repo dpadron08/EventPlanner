@@ -2,6 +2,8 @@ package com.example.eventplanner.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +21,14 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.EventDetailsActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
@@ -33,8 +37,10 @@ import com.parse.SaveCallback;
 import org.parceler.Parcels;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder>{
 
@@ -112,7 +118,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
             // display Location if it exists
             if (event.getLocation() != null) {
-                String locationStr = "Where: " + event.getLocation().toString();
+                String locationStr = "Where: " + getAddress(event.getLocation());
                 tvLocation.setText(locationStr);
             }
 
@@ -153,6 +159,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
             // draw colored borders depending if users are subscribed to event
             styleHighlightAndCapacity(event);
+        }
+
+        private String getAddress(ParseGeoPoint location)  {
+            Geocoder geocoder;
+            List<Address> addresses = null;
+            geocoder = new Geocoder(context, Locale.getDefault());
+            try {
+                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "No address found";
+            }
+            return addresses.get(0).getAddressLine(0);
         }
 
         private void toggleSubscription(final Event event) {

@@ -1,5 +1,7 @@
 package com.example.eventplanner.fragments;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +19,13 @@ import com.example.eventplanner.models.Event;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class EventDetailsFragment extends Fragment {
     // Store instance variables
@@ -81,9 +87,12 @@ public class EventDetailsFragment extends Fragment {
         tvDescription.setText(event.getDescription());
         tvAuthor.setText(event.getAuthor().getUsername());
 
+        // display Location if it exists
         if (event.getLocation() != null) {
-            tvLocation.setText(event.getLocation().toString()); // getting geo point
+            String locationStr = "Where: " + getAddress(event.getLocation());
+            tvLocation.setText(locationStr);
         }
+
 
         if (event.getDate() != null) {
             String date = ((Date) event.getDate()).toString();
@@ -92,5 +101,18 @@ public class EventDetailsFragment extends Fragment {
         tvRestrictions.setText(event.getRestrictions());
 
 
+    }
+
+    private String getAddress(ParseGeoPoint location)  {
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(getContext(), Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "No address found";
+        }
+        return addresses.get(0).getAddressLine(0);
     }
 }

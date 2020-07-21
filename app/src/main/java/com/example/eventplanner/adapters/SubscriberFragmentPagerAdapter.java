@@ -38,8 +38,7 @@ public class SubscriberFragmentPagerAdapter extends FragmentPagerAdapter {
                 bundle.putParcelable("event", event);
                 fragment.setArguments(bundle);
                 return fragment;
-                //return EventDetailsFragment.newInstance(0, "Page # 1");
-            case 1: // Fragment # 1 - This will show SecondFragment
+            case 1:
                 fragment = new SubscriberFragment();
                 bundle.putParcelable("event", event);
                 fragment.setArguments(bundle);

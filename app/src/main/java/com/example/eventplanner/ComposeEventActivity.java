@@ -8,6 +8,8 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +50,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class ComposeEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
@@ -301,7 +305,8 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             //Toast.makeText(this, "Location Set!", Toast.LENGTH_SHORT).show();
             Snackbar.make(constraintLayout, "Location set", Snackbar.LENGTH_SHORT)
                     .show();
-            tvLocationDisplay.setText("Location set!");
+            String locationStr = "Location: " + getAddress(eventLocation);
+            tvLocationDisplay.setText(locationStr);
         }
 
     }
@@ -386,5 +391,17 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     public void hideProgressBar() {
         // Hide progress item
         miActionProgressItem.setVisible(false);
+    }
+    private String getAddress(LatLng location)  {
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "No address found";
+        }
+        return addresses.get(0).getAddressLine(0);
     }
 }
