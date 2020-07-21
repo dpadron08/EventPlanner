@@ -28,6 +28,7 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 import org.w3c.dom.Text;
@@ -151,7 +152,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             });
 
             // draw colored borders depending if users are subscribed to event
-            styleHighlight(event);
+            styleHighlightAndCapacity(event);
         }
 
         private void toggleSubscription(final Event event) {
@@ -160,12 +161,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             ParseQuery<ParseUser> query = relation.getQuery();
             query.findInBackground(new FindCallback<ParseUser>() {
                 @Override
-                public void done(List<ParseUser> objects, ParseException e) {
+                public void done(final List<ParseUser> objects, ParseException e) {
                     if (e != null) {
                         Log.e(TAG, "Unable to retrieve subscribers for event when toggling subscription", e);
                         return;
                     }
-
+                    int population = objects.size();
                     boolean isUserSubscribed = false;
                     for (ParseUser subscriber : objects) {
                         if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
@@ -180,23 +181,40 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         cardView.setStrokeWidth(0);
                         Snackbar.make(container, "Unsubscribed!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        population--;
 
                     } else {
                         // subscribe and change border color
                         event.getRelation("subscribers").add(ParseUser.getCurrentUser());
                         ParseUser.getCurrentUser().getRelation("subscriptions").add(event);
                         cardView.setStrokeWidth(4);
+                        ParseUser.getCurrentUser().getRelation("subscriptions").describeContents();
                         Snackbar.make(container, "Subscribed!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        population++;
                     }
-                    event.saveInBackground();
-                    ParseUser.getCurrentUser().saveInBackground();
+                    final int finalPopulation = population;
+                    event.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                Log.e(TAG, "done: Unable to add to event's subsscribers", e);
+                                return;
+                            }
+                            if (event.getCapacity() > 0) {
+                                String capacity = finalPopulation +"/" +event.getCapacity();
+                                tvCapacity.setText(capacity);
+                            }
+                            ParseUser.getCurrentUser().saveInBackground();
+                        }
+                    });
+
 
                 }
             });
         }
 
-        public void styleHighlight(final Event event) {
+        public void styleHighlightAndCapacity(final Event event) {
             ParseRelation<ParseUser> relation = event.getRelation("subscribers");
             ParseQuery<ParseUser> query = relation.getQuery();
 
