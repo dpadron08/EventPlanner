@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -140,7 +142,10 @@ public class TimelineFragment extends Fragment {
         });
 
         queryEvents();
+
     }
+
+
 
     // get all most recent 20 events and put on timeline
     private void queryEvents() {

@@ -3,6 +3,7 @@ package com.example.eventplanner.fragments;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,15 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.util.Date;
@@ -32,12 +37,15 @@ public class EventDetailsFragment extends Fragment {
     private String title;
     private int page;
 
+    private static final String TAG = "EventDetailsFragment";
+
     TextView tvTitle;
     TextView tvDescription;
     TextView tvAuthor;
     TextView tvLocation;
     TextView tvDate;
     TextView tvRestrictions;
+    TextView tvCapacity;
 
     private Event event;
 
@@ -82,6 +90,7 @@ public class EventDetailsFragment extends Fragment {
         tvLocation = view.findViewById(R.id.tvLocation);
         tvDate = view.findViewById(R.id.tvDate);
         tvRestrictions = view.findViewById(R.id.tvRestrictions);
+        tvCapacity = view.findViewById(R.id.tvCapacity);
 
         tvTitle.setText(event.getTitle());
         tvDescription.setText(event.getDescription());
@@ -100,6 +109,24 @@ public class EventDetailsFragment extends Fragment {
         }
         tvRestrictions.setText(event.getRestrictions());
 
+        ParseRelation<ParseUser> relation = event.getRelation("subscribers");
+        ParseQuery<ParseUser> query = relation.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "done: Unable to fetch subscriber count", e);
+                    return;
+                }
+                String capacity;
+                if (event.getCapacity() > 0) {
+                    capacity = objects.size() + "/" + event.getCapacity();
+                } else {
+                    capacity = "No capacity";
+                }
+                tvCapacity.setText(capacity);
+            }
+        });
 
     }
 
