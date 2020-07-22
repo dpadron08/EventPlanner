@@ -249,11 +249,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         Log.i(TAG, "Username subscribed: "+ u.getUsername());
                     }
                      */
-
-                    cardView.setStrokeWidth(0);
+                    cardView.setStrokeColor(context.getResources().getColor(R.color.colorWhite));
                     for (ParseUser subscriber : objects) {
                         if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
-                            cardView.setStrokeWidth(4);
+                            cardView.setStrokeColor(context.getResources().getColor(R.color.colorSubscribed));
                             break;
                         }
                     }
