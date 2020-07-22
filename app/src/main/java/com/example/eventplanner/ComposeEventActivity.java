@@ -199,6 +199,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         event.setRestrictions(restrictions);
         event.setAuthor(user);
         event.setCapacity(capacity);
+        event.setSubscriberCount(1);
 
         // only set datetime if both date and time were set
         if (datePicked && timePicked) {

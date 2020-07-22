@@ -213,6 +213,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         population++;
                     }
                     final int finalPopulation = population;
+                    //possible problem with race conditions
+                    event.setSubscriberCount(finalPopulation);
                     event.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {

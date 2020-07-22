@@ -25,6 +25,7 @@ public class Event extends com.parse.ParseObject {
     public static final String KEY_LOCATION = "location";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_CAPACITY = "capacity";
+    public static final String KEY_SUBSCRIBER_COUNT = "subscriberCount";
 
     // empty constructor for parceler library
     public Event() {}
@@ -85,5 +86,12 @@ public class Event extends com.parse.ParseObject {
     }
     public void setCapacity(int capacity) {
         put(KEY_CAPACITY, capacity);
+    }
+
+    public int getSubscriberCount() {
+        return getInt(KEY_SUBSCRIBER_COUNT);
+    }
+    public void setSubscriberCount(int subscriberCount) {
+        put(KEY_SUBSCRIBER_COUNT, subscriberCount);
     }
 }

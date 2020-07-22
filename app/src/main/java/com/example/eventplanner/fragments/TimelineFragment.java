@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.eventplanner.ComposeEventActivity;
+import com.example.eventplanner.LoginActivity;
 import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
@@ -36,6 +37,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -192,13 +194,69 @@ public class TimelineFragment extends Fragment {
                  */
 
                 allEvents.addAll(objects);
-                adapter.notifyDataSetChanged();
+                removeEventsAtCapacity();
+                //adapter.notifyDataSetChanged();  // uncomment when u dont want to filter
                 if (miActionProgressItem != null) {
                     hideProgressBar();
                 }
 
             }
         });
+    }
+
+    private void removeEventsAtCapacity() {
+        for (Event event : allEvents) {
+            final Event currentEvent = event;
+            currentEvent.fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error trying to remove events filled at capacity. Stopping now: ", e);
+                        Snackbar.make(constraintLayout, "Error trying to remove events filled " +
+                                "at capacity. Stopping now", Snackbar.LENGTH_SHORT)
+                                .show();
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
+
+                    // get population count
+                    final int population = currentEvent.getSubscriberCount();
+
+                    // find out if current user is a subscriber
+                    ParseRelation<ParseUser> relation = currentEvent.getRelation("subscribers");
+                    ParseQuery<ParseUser> query = relation.getQuery();
+                    query.findInBackground(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> subscribers, ParseException e2) {
+                            if (e2 != null) {
+                                Log.e(TAG, "done: Error determining if user is a subscriber, for filtering. Stopping now", e2);
+                                Snackbar.make(constraintLayout, "Error determining if user is " +
+                                        "a subscriber, for filtering. Stopping now", Snackbar.LENGTH_SHORT)
+                                        .show();
+                                adapter.notifyDataSetChanged();
+                                return;
+                            }
+                            boolean isSubscriber = false;
+                            for (ParseUser subscriber : subscribers) {
+                                if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId()) ) {
+                                    isSubscriber = true;
+                                    break;
+                                }
+                            }
+
+                            // if user is not currently a subscriber and event is over or at capacity,
+                            // remove this event
+                            if (!isSubscriber && population >= currentEvent.getCapacity()) {
+                                allEvents.remove(currentEvent);
+                                Log.i(TAG, "done: Event deleted");
+                            }
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    });
+                }
+            });
+        }
     }
 
     // go to create a new event
