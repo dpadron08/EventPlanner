@@ -1,5 +1,6 @@
 package com.example.eventplanner.fragments;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,6 +10,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.transition.Explode;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 
 import com.example.eventplanner.AddFriendActivity;
@@ -89,6 +94,13 @@ public class FriendsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu(true);
+        setupWindowAnimations();
+    }
+
+    private void setupWindowAnimations() {
+        Slide slide = new Slide();
+        slide.setDuration(700);
+        getActivity().getWindow().setExitTransition(slide);
     }
 
     @Override
@@ -121,9 +133,19 @@ public class FriendsFragment extends Fragment {
     }
 
     private void goAddFriendActivity() {
+
         Intent intent = new Intent(getContext(), AddFriendActivity.class);
         // will need to convert to startActivityForResult when friend adding ability implemented
-        startActivity(intent);
+        //startActivity(intent); // no transitions
+
+        // enter and exit explode transitions
+        //getActivity().getWindow().setEnterTransition(new Explode());
+        //getActivity().getWindow().setExitTransition(new Explode());
+
+
+        startActivity(intent,
+                ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+
     }
 
     // get friends from database
