@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.eventplanner.ComposeEventActivity;
+import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
@@ -141,6 +142,22 @@ public class TimelineFragment extends Fragment {
             }
         });
 
+        rvEvents.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && btnFloatingAdd.getVisibility() == View.VISIBLE) {
+                    btnFloatingAdd.hide();
+                } else if (dy < 0 && btnFloatingAdd.getVisibility() != View.INVISIBLE) {
+                    btnFloatingAdd.show();
+                }
+                if (dy > 0 && MainActivity.bottomNavigationView.getVisibility() == View.VISIBLE) {
+                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
+                } else if (dy < 0 && MainActivity.bottomNavigationView.getVisibility() != View.INVISIBLE) {
+                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         queryEvents();
 
     }

@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
-    private BottomNavigationView bottomNavigationView;
+    public static BottomNavigationView bottomNavigationView;
     int startingPosition = 1;
 
     @Override
