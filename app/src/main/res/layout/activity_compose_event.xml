@@ -27,45 +27,71 @@
         app:layout_constraintStart_toStartOf="@+id/ivEventImage"
         app:layout_constraintTop_toBottomOf="@+id/ivEventImage" />
 
-    <EditText
-        android:id="@+id/etTitle"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:hint="Add event title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddPicture" />
 
-    <EditText
-        android:id="@+id/etDescription"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etTitleLayout"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:hint="Add event description"
-        android:inputType="textMultiLine"
-        android:minLines="3"
+        android:layout_marginTop="12dp"
+        android:hint="Event title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/btnAddPicture">
 
-    <EditText
-        android:id="@+id/etRestrictions"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etDescriptionLayout"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:hint="Add restrictions"
+        android:hint="Event description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/etTitleLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="1"
+            android:inputType="textMultiLine"
+            android:maxLines="3"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etRestrictionsLayout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:hint="Event restrictions"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etDescriptionLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRestrictions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="4dp"
         android:text="Submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etCapacityLayout" />
 
     <Button
         android:id="@+id/btnPickDate"
@@ -74,7 +100,7 @@
         android:layout_marginStart="24dp"
         android:text="Date"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etRestrictions" />
+        app:layout_constraintTop_toBottomOf="@+id/etRestrictionsLayout" />
 
     <Button
         android:id="@+id/btnPickTime"
@@ -83,7 +109,7 @@
         android:layout_marginStart="4dp"
         android:text="Time"
         app:layout_constraintStart_toEndOf="@+id/btnPickDate"
-        app:layout_constraintTop_toBottomOf="@+id/etRestrictions" />
+        app:layout_constraintTop_toBottomOf="@+id/etRestrictionsLayout" />
 
     <TextView
         android:id="@+id/tvDateTime"
@@ -95,7 +121,7 @@
         android:text="--/--/---- --:--"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnPickTime"
-        app:layout_constraintTop_toBottomOf="@+id/etRestrictions" />
+        app:layout_constraintTop_toBottomOf="@+id/etRestrictionsLayout" />
 
     <Button
         android:id="@+id/btnPickLocation"
@@ -118,15 +144,23 @@
         app:layout_constraintStart_toEndOf="@+id/btnPickLocation"
         app:layout_constraintTop_toBottomOf="@+id/btnPickTime" />
 
-    <EditText
-        android:id="@+id/etCapacity"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etCapacityLayout"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:hint="Add capacity"
-        android:inputType="number"
+        android:hint="Event capacity"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPickLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/btnPickLocation">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCapacity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/btnTakePicture"
