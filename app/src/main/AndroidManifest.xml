@@ -54,7 +54,8 @@
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".EventDetailsActivity" />
         <activity android:name=".ComposeEventActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
