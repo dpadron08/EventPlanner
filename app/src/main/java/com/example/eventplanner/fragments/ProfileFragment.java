@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.w3c.dom.Text;
 
@@ -86,10 +88,11 @@ public class ProfileFragment extends Fragment {
     // other profile elements
     ImageView ivProfilePic;
     TextView tvUsername;
-    TextView tvInterests;
+    EditText etInterests;
     Button btnAddProfilePicture;
     Button btnTakePicture;
     Button btnLogout;
+    Button btnSave;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -140,10 +143,11 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvUsername = view.findViewById(R.id.tvUsername);
-        tvInterests = view.findViewById(R.id.tvInterests);
+        etInterests = view.findViewById(R.id.tvInterests);
         btnAddProfilePicture = view.findViewById(R.id.btnAddProfilePicture);
         btnTakePicture = view.findViewById(R.id.btnTakePicture);
         btnLogout = view.findViewById(R.id.btnLogout);
+        btnSave = view.findViewById(R.id.btnSave);
         queryUserProfile(); // get user attributes and populate the views with data
 
 
@@ -171,6 +175,33 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 userLogout();
+            }
+        });
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveUserDetails();
+            }
+        });
+    }
+
+    private void saveUserDetails() {
+        String interests = etInterests.getText().toString();
+        if (interests.isEmpty()) {
+            interests = "None";
+        }
+        ParseUser user = ParseUser.getCurrentUser();
+        user.put("interests", interests);
+        user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Snackbar.make(rvEvents, "Failed to save", Snackbar.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+                Snackbar.make(rvEvents, "Details saved", Snackbar.LENGTH_SHORT)
+                        .show();
             }
         });
     }
@@ -270,11 +301,11 @@ public class ProfileFragment extends Fragment {
                 tvUsername.setText(((ParseUser)object).getUsername());
                 String interests;
                 if (((ParseUser)object).getString("interests") != null) {
-                    interests = "Interests: " + ((ParseUser)object).getString("interests");
+                    interests = ((ParseUser)object).getString("interests");
                 } else {
                     interests = "None";
                 }
-                tvInterests.setText(interests);
+                etInterests.setText(interests);
                 ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
                 if (image != null) {
                     Glide.with(getContext()).load(image.getUrl()).into(ivProfilePic);
