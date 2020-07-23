@@ -1,6 +1,8 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.transition.Explode;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
+import com.example.eventplanner.adapters.FriendsAdapter;
 import com.google.android.material.textfield.TextInputEditText;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
@@ -38,6 +41,10 @@ public class AddFriendActivity extends AppCompatActivity {
     Button btnSearch;
     private String query;
 
+    RecyclerView rvFriends;
+    FriendsAdapter adapter;
+    List<ParseUser> friendMatches;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +54,13 @@ public class AddFriendActivity extends AppCompatActivity {
 
         etSearchQuery = findViewById(R.id.etSearchQuery);
         btnSearch = findViewById(R.id.btnSearch);
+        rvFriends = findViewById(R.id.rvFriends);
+
+        friendMatches = new ArrayList<>();
+        adapter = new FriendsAdapter(this, friendMatches);
+        rvFriends.setAdapter(adapter);
+        rvFriends.setLayoutManager(new LinearLayoutManager(this));
+
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,9 +82,9 @@ public class AddFriendActivity extends AppCompatActivity {
                 }
                  */
                 List<QueryItem> input = new ArrayList<>();
-                input.add(new QueryItem("1", search));
+                input.add(new QueryItem("1", search, "none"));
                 for (int i = 0; i < objects.size(); i++) {
-                    input.add(new QueryItem(Integer.toString(i+2), objects.get(i).getUsername()));
+                    input.add(new QueryItem(Integer.toString(i+2), objects.get(i).getUsername(), objects.get(i).getObjectId()));
                 }
 
                 List<Document> documentList = new ArrayList<>();
@@ -82,16 +96,23 @@ public class AddFriendActivity extends AppCompatActivity {
                 MatchService matchService = new MatchService();
                 Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(documentList);
 
+                List<ParseUser> usersThatMatched = new ArrayList<>();
                 result.entrySet().forEach(entry -> {
                     entry.getValue().forEach(match -> {
 
                         // only get the items that the search matched with
                         if (entry.getKey().equals("1")) {
                             Log.i(TAG, "Key: " +entry.getKey() + " Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
+                            // get references to the user objects that matches
+                            usersThatMatched.add(objects.get(  Integer.parseInt(match.getMatchedWith().getKey()) -2 )) ;
                         }
 
                     });
                 });
+
+                adapter.clear();
+                friendMatches.addAll(usersThatMatched);
+                adapter.notifyDataSetChanged();
 
                 Log.i(TAG, "done: Done");
 
@@ -114,10 +135,12 @@ public class AddFriendActivity extends AppCompatActivity {
     public class QueryItem {
         String id; // the key
         String name;
+        String objectId;
 
-        public QueryItem(String id, String name) {
+        public QueryItem(String id, String name, String objectId) {
             this.id = id;
             this.name = name;
+            this.objectId = objectId;
         }
     }
 }
