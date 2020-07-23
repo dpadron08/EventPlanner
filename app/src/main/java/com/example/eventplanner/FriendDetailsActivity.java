@@ -82,6 +82,14 @@ public class FriendDetailsActivity extends AppCompatActivity {
                 toggleFriendship();
             }
         });
+
+        preventFriendingYourself();
+    }
+
+    private void preventFriendingYourself() {
+        if (friendUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+            btnToggleFriend.setVisibility(View.GONE);
+        }
     }
 
     private void toggleFriendship() {
