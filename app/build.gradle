@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.eventplanner"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -19,6 +19,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -51,5 +54,7 @@ dependencies {
 
     // for picking location
     implementation 'com.google.android.gms:play-services-places:17.0.0'
+    // for complex algorithm requirement
+    implementation 'com.github.intuit:fuzzy-matcher:1.0.3'
 
 }

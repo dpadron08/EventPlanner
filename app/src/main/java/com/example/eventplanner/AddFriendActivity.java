@@ -7,8 +7,14 @@ import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.TransitionInflater;
 import android.view.Window;
+import android.widget.Button;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 public class AddFriendActivity extends AppCompatActivity {
+
+    TextInputEditText etSearchQuery;
+    Button btnSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +22,10 @@ public class AddFriendActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_friend);
         //getWindow().setExitTransition(new Explode());
         setupWindowAnimations();
+
+        etSearchQuery = findViewById(R.id.etSearchQuery);
+        btnSearch = findViewById(R.id.btnSearch);
+
     }
 
     private void setupWindowAnimations() {
