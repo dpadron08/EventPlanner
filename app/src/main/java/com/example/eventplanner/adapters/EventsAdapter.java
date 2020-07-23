@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.EventDetailsActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
@@ -29,13 +28,13 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.Date;
@@ -139,26 +138,57 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                 ivImage.setImageResource(R.drawable.blankpfp);
             }
 
-            // when user clicks on an event, this takes them to details view
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(context, EventDetailsActivity.class);
-                    intent.putExtra("event", Parcels.wrap(event));
-                    context.startActivity(intent);
-                }
-            });
+            View.OnTouchListener onTouchListener= new View.OnTouchListener() {
+                private GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
+                    }
 
-            container.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        goEventDetailsActivity(event);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        Log.i(TAG, "onDoubleTap: ");
+                        toggleSubscription(event);
+                        // get most recent information of event
+                        event.fetchInBackground(new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject object, ParseException e) {
+                                goEventDetailsActivity((Event)object);
+                            }
+                        });
+
+                        return true;
+                    }
+
+                    @Override
+                    public void onLongPress(MotionEvent e) {
+                        super.onLongPress(e);
+                        toggleSubscription(event);
+                    }
+                });
+
                 @Override
-                public boolean onLongClick(View view) {
-                    toggleSubscription(event);
-                    return true;
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    container.performClick();
+                    return gestureDetector.onTouchEvent(motionEvent);
                 }
-            });
+            };
+            container.setOnTouchListener(onTouchListener);
 
             // draw colored borders depending if users are subscribed to event
             styleHighlightAndCapacity(event);
+        }
+
+        private void goEventDetailsActivity(Event event) {
+            Intent intent = new Intent(context, EventDetailsActivity.class);
+            intent.putExtra("event", Parcels.wrap(event));
+            context.startActivity(intent);
         }
 
         private String getAddress(ParseGeoPoint location)  {
@@ -197,7 +227,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         // unsubscribe and change border color
                         event.getRelation("subscribers").remove(ParseUser.getCurrentUser());
                         ParseUser.getCurrentUser().getRelation("subscriptions").remove(event);
-                        cardView.setStrokeWidth(0);
+                        cardView.setStrokeColor(context.getResources().getColor(R.color.colorWhite));
                         Snackbar.make(container, "Unsubscribed!", Snackbar.LENGTH_SHORT)
                                 .show();
                         population--;
@@ -206,8 +236,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         // subscribe and change border color
                         event.getRelation("subscribers").add(ParseUser.getCurrentUser());
                         ParseUser.getCurrentUser().getRelation("subscriptions").add(event);
-                        cardView.setStrokeWidth(4);
-                        ParseUser.getCurrentUser().getRelation("subscriptions").describeContents();
+                        cardView.setStrokeColor(context.getResources().getColor(R.color.colorSubscribed));
                         Snackbar.make(container, "Subscribed!", Snackbar.LENGTH_SHORT)
                                 .show();
                         population++;
