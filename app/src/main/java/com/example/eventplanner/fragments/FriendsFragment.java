@@ -178,6 +178,16 @@ public class FriendsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume: ");
+        // refresh friends list after onViewCreated called once
+        if (adapter!= null && allFriends != null) {
+            queryFriends();
+        }
+    }
+
     // for inflating our custom action bar with menu items
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

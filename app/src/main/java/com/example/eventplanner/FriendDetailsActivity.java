@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,6 +36,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
     TextView tvFriendUsername;
     TextView tvFriendInterests;
     ImageView ivProfilePicture;
+    Button btnToggleFriend;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -52,6 +55,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
         tvFriendUsername = findViewById(R.id.tvFriendUsername);
         tvFriendInterests = findViewById(R.id.tvFriendInterests);
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        btnToggleFriend = findViewById(R.id.btnToggleFriend);
 
         tvFriendInterests.setText(friendUser.getString("interests"));
         tvFriendUsername.setText(friendUser.getUsername());
@@ -63,12 +67,88 @@ public class FriendDetailsActivity extends AppCompatActivity {
             ivProfilePicture.setImageResource(R.drawable.blankpfp);
         }
 
+        queryFriendship();
+
         rvEvents = findViewById(R.id.rvEvents);
         allEvents = new ArrayList<>();
         adapter = new EventsAdapter(this, allEvents);
         rvEvents.setAdapter(adapter);
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
         queryFriendSubscribedEvents();
+
+        btnToggleFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleFriendship();
+            }
+        });
+    }
+
+    private void toggleFriendship() {
+        ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
+        ParseQuery<ParseUser> query = relation.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "done: Unable to query friendship status", e);
+                    return;
+                }
+                boolean userIsFriend = false;
+                for (ParseUser friend : objects) {
+                    if (friend.getObjectId().equals(friendUser.getObjectId())) {
+                        userIsFriend = true;
+                        break;
+                    }
+                }
+                if (userIsFriend) {
+                    // unfollow this friend
+                    btnToggleFriend.setText("Follow");
+                    btnToggleFriend.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(R.drawable.ic_add_friend_24),
+                            null, null, null);
+                    ParseUser.getCurrentUser().getRelation("friends").remove(friendUser);
+                } else {
+                    // follow this friend
+                    btnToggleFriend.setText("Unfollow");
+                    btnToggleFriend.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(R.drawable.ic_unfollow_friend_24),
+                            null, null, null);
+                    ParseUser.getCurrentUser().getRelation("friends").add(friendUser);
+                }
+                ParseUser.getCurrentUser().saveInBackground();
+            }
+        });
+    }
+
+    private void queryFriendship() {
+        ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
+        ParseQuery<ParseUser> query = relation.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "done: Unable to query friendship status", e);
+                    return;
+                }
+                // check if this user is a friend in order to style button
+                boolean userIsFriend = false;
+                for (ParseUser friend : objects) {
+                    if (friend.getObjectId().equals(friendUser.getObjectId())) {
+                        userIsFriend = true;
+                        break;
+                    }
+                }
+                if (userIsFriend) {
+                    btnToggleFriend.setText("Unfollow");
+                    btnToggleFriend.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(R.drawable.ic_unfollow_friend_24),
+                            null, null, null);
+                } else {
+                    btnToggleFriend.setText("Follow");
+                    btnToggleFriend.setCompoundDrawablesRelativeWithIntrinsicBounds(getDrawable(R.drawable.ic_add_friend_24),
+                            null, null, null);
+                }
+
+            }
+        });
     }
 
     private void queryFriendSubscribedEvents() {
