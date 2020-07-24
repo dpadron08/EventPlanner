@@ -8,10 +8,10 @@
 
     <ImageView
         android:id="@+id/ivProfilePicture"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="48dp"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -20,7 +20,7 @@
         android:id="@+id/tvFriendUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:text="FriendUsername"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -31,11 +31,11 @@
         android:id="@+id/tvFriendInterests"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="4dp"
         android:text="Friend's interests"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ivProfilePicture"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/tvFriendUsername" />
 
     <TextView
@@ -52,7 +52,6 @@
         android:id="@+id/rvEvents"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,4 +67,14 @@
         app:icon="@drawable/ic_add_friend_24"
         app:layout_constraintStart_toEndOf="@+id/ivProfilePicture"
         app:layout_constraintTop_toBottomOf="@+id/tvFriendInterests" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:text="Interests: "
+        app:layout_constraintStart_toEndOf="@+id/ivProfilePicture"
+        app:layout_constraintTop_toBottomOf="@+id/tvFriendUsername" />
 </androidx.constraintlayout.widget.ConstraintLayout>
