@@ -26,6 +26,7 @@ import android.widget.Button;
 import com.example.eventplanner.AddFriendActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.FriendsAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -55,6 +56,7 @@ public class FriendsFragment extends Fragment {
     List<ParseUser> allFriends;
     FriendsAdapter adapter;
     Button btnAddFriend;
+    FloatingActionButton btnFloatingAdd;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -122,6 +124,15 @@ public class FriendsFragment extends Fragment {
                 goAddFriendActivity();
             }
         });
+        btnFloatingAdd = view.findViewById(R.id.btnFloatingAdd);
+        btnFloatingAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goAddFriendActivity();
+            }
+        });
+
+
 
         rvFriends = view.findViewById(R.id.rvFriends);
         allFriends = new ArrayList<>();
