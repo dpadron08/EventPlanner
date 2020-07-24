@@ -19,6 +19,8 @@ import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
 import com.intuit.fuzzymatcher.domain.Match;
+import com.intuit.fuzzymatcher.domain.MatchType;
+import com.intuit.fuzzymatcher.function.TokenizerFunction;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.intuit.fuzzymatcher.domain.ElementType.ADDRESS;
+import static com.intuit.fuzzymatcher.domain.ElementType.EMAIL;
 import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
 
 public class AddFriendActivity extends AppCompatActivity {
@@ -91,10 +94,12 @@ public class AddFriendActivity extends AppCompatActivity {
                 for (QueryItem item : input) {
                     documentList.add(new Document.Builder(item.id)
                     .addElement(new Element.Builder<String>().setValue(item.name).setType(NAME).setThreshold(0).createElement()).createDocument());
+                    //.addElement(new Element.Builder<String>().setValue(item.name).setType(NAME).setTokenizerFunction(TokenizerFunction.triGramTokenizer()).createElement()).createDocument());
                 }
 
                 MatchService matchService = new MatchService();
                 Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(documentList);
+                //Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(documentList.get(0), documentList);
 
                 List<ParseUser> usersThatMatched = new ArrayList<>();
                 result.entrySet().forEach(entry -> {
