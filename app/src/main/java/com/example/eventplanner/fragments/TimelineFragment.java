@@ -160,6 +160,9 @@ public class TimelineFragment extends Fragment {
                 }
             }
         });
+
+
+
         queryEvents();
 
     }

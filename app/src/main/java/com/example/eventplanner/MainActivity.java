@@ -6,12 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.example.eventplanner.fragments.FriendsFragment;
 import com.example.eventplanner.fragments.MapFragment;
@@ -27,12 +23,15 @@ public class MainActivity extends AppCompatActivity {
     public static BottomNavigationView bottomNavigationView;
     int startingPosition = 1;
 
+    FrameLayout flContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        flContainer = findViewById(R.id.flContainer);
 
         final Fragment theMap = new MapFragment();
 
