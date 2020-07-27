@@ -47,6 +47,8 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
+import listeners.EndlessRecyclerViewScrollListener;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link TimelineFragment#newInstance} factory method to
@@ -65,6 +67,8 @@ public class TimelineFragment extends Fragment {
     FloatingActionButton btnFloatingAdd;
     ConstraintLayout constraintLayout;
     SwipeRefreshLayout swipeContainer;
+    int totalQueried = 0;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -132,7 +136,10 @@ public class TimelineFragment extends Fragment {
         allEvents = new ArrayList<>();
         adapter = new EventsAdapter(getContext(), allEvents);
         rvEvents.setAdapter(adapter);
-        rvEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvEvents.setLayoutManager(linearLayoutManager);
+        totalQueried = 0;
 
         btnAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,6 +174,7 @@ public class TimelineFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                totalQueried = 0;
                 queryEvents();
             }
         });
@@ -176,11 +184,19 @@ public class TimelineFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.i(TAG, "onLoadMore: loading mpre");
+                addMoreEvents();
+            }
+        };
+
+        rvEvents.addOnScrollListener(scrollListener);
 
         queryEvents();
 
     }
-
 
 
     // get all most recent 20 events and put on timeline
@@ -190,7 +206,8 @@ public class TimelineFragment extends Fragment {
         }
         adapter.clear();
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
-        //query.setLimit(20);
+        query.setLimit(10);
+        //query.setSkip(totalQueried);
         query.include(Event.KEY_AUTHOR);
         // order posts by creation date (newest first)
         query.addDescendingOrder(Event.KEY_CREATED_AT);
@@ -209,7 +226,7 @@ public class TimelineFragment extends Fragment {
                     + "image url: " + event.getImage().getUrl());
                 }
                  */
-
+                totalQueried += objects.size();
                 allEvents.addAll(objects);
                 removeEventsAtCapacity();
                 //adapter.notifyDataSetChanged();  // uncomment when u dont want to filter
@@ -220,6 +237,36 @@ public class TimelineFragment extends Fragment {
 
             }
         });
+    }
+
+    private void addMoreEvents() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
+        ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
+        query.setLimit(10);
+        query.setSkip(totalQueried);
+        query.include(Event.KEY_AUTHOR);
+        // order posts by creation date (newest first)
+        query.addDescendingOrder(Event.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Event>() {
+            @Override
+            public void done(List<Event> objects, ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
+                if (e != null) {
+                    Log.e(TAG, "Failed to query events");
+                    return;
+                }
+
+                totalQueried += objects.size();
+                allEvents.addAll(objects);
+                removeEventsAtCapacity();
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     private void removeEventsAtCapacity() {
