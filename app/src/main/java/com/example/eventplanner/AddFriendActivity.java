@@ -38,19 +38,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.intuit.fuzzymatcher.domain.ElementType.ADDRESS;
-import static com.intuit.fuzzymatcher.domain.ElementType.EMAIL;
-import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
-
 public class AddFriendActivity extends AppCompatActivity {
     private static final String TAG = "AddFriendActivity";
 
+    // UI elements
     TextInputEditText etSearchQuery;
     Button btnSearch;
     private String query;
 
     RecyclerView rvFriends;
     FriendsAdapter adapter;
+
+    // users we found by searching
     List<ParseUser> friendMatches;
 
     @Override
@@ -60,6 +59,7 @@ public class AddFriendActivity extends AppCompatActivity {
         //getWindow().setExitTransition(new Explode());
         setupWindowAnimations();
 
+        // setup UI
         etSearchQuery = findViewById(R.id.etSearchQuery);
         btnSearch = findViewById(R.id.btnSearch);
         rvFriends = findViewById(R.id.rvFriends);
@@ -81,26 +81,30 @@ public class AddFriendActivity extends AppCompatActivity {
 
     private void search(String search) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+
+        // query all users
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
-                /*
-                for (ParseUser user : objects) {
-                    Log.i(TAG, "Username: " + user.getUsername());
-                }
-                 */
 
+                // This is the list of all the triGramLists. A triGram list is a list of all the tri
+                // grams for a string
                 ArrayList<TriGramList> triGramAggregate = new ArrayList<>();
+
+                //add the search query to the list of triGramLists
                 triGramAggregate.add(new TriGramList(search));
+                // add each users' username into the triGramListAggregate
                 for (ParseUser user : objects) {
                     triGramAggregate.add(new TriGramList(user.getUsername()));
                 }
 
+                // determine whether or not each username in the database matches with the query
+                // using our matching algorithm
                 compareAggregateWithHash(triGramAggregate, 0.01);
 
                 List<ParseUser> usersThatMatched = new ArrayList<>();
 
-
+                // find all the users that matched
                 adapter.clear();
                 for (int i = 1; i < triGramAggregate.size(); i++) {
                     if (triGramAggregate.get(i).didMatch) {
@@ -126,21 +130,31 @@ public class AddFriendActivity extends AppCompatActivity {
     }
 
     /**
-     * Tri gram list for each query
+     * Converts a given string into an array list of strings representing the list of tri-grams for
+     * that string
      */
     public class TriGramList {
+        // the list of tri grams
         ArrayList<String> triGramList;
+
+        // whether or not the string matched with the query
         boolean didMatch;
+
+        // the string used to form the tri-gram list
         String originalString;
 
         public TriGramList(String originalString) {
             triGramList = new ArrayList<>();
             didMatch = false;
+            // pre-format the given string. remove white space. Convert to all lowercase
             this.originalString = (originalString.replaceAll(" ", ""))
                     .toLowerCase();
             findTriGrams();
         }
 
+        /**
+         * Convert the given string to an array list of tri grams
+         */
         private void findTriGrams() {
             if (originalString.length() < 3) {
                 triGramList.add(originalString);
@@ -156,6 +170,14 @@ public class AddFriendActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Compares the tri gram list of the query with the tri grams of the queried total list of users.
+     * In other words, finds the percentage tri-grams that match between two lists of tri-grams: that of query and each
+     * queried username. Assumes that the query is at index 0. Uses hash tables to check whether
+     * matches exist between tri-gram lists
+     * @param triGramAggregate the list of tri-gram lists
+     * @param threshold the threshold above which two strings are considered a match
+     */
     private void compareAggregateWithHash(ArrayList<TriGramList> triGramAggregate, double threshold) {
         TriGramList queryTriGramList = triGramAggregate.get(0);
         for (int i = 1; i < triGramAggregate.size(); i++) {
@@ -173,13 +195,11 @@ public class AddFriendActivity extends AppCompatActivity {
             ArrayList<String> currList = triGramAggregate.get(i).triGramList;
             // populate hash with user result
             for (int j = 0; j < currList.size(); j++) {
-
                 if (map.get(currList.get(j)) == null) {
                     map.put(currList.get(j), 1);
                 } else {
                     map.put(currList.get(j), 2);
                 }
-
             }
 
             // determine if match
