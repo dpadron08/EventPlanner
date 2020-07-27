@@ -67,4 +67,6 @@ dependencies {
     // for unit tests
     testImplementation 'org.robolectric:robolectric:4.3'
 
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
 }

@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,6 +64,7 @@ public class TimelineFragment extends Fragment {
     Button btnAddEvent;
     FloatingActionButton btnFloatingAdd;
     ConstraintLayout constraintLayout;
+    SwipeRefreshLayout swipeContainer;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -124,6 +126,7 @@ public class TimelineFragment extends Fragment {
         btnAddEvent = view.findViewById(R.id.btnAddEvent);
         btnFloatingAdd = view.findViewById(R.id.btnFloatingAdd);
         constraintLayout = view.findViewById(R.id.constraintLayout);
+        swipeContainer = view.findViewById(R.id.swipeContainer);
 
         rvEvents = view.findViewById(R.id.rvEvents);
         allEvents = new ArrayList<>();
@@ -161,6 +164,17 @@ public class TimelineFragment extends Fragment {
             }
         });
 
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                queryEvents();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
 
         queryEvents();
@@ -202,6 +216,7 @@ public class TimelineFragment extends Fragment {
                 if (miActionProgressItem != null) {
                     hideProgressBar();
                 }
+                swipeContainer.setRefreshing(false);
 
             }
         });
