@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.job.JobInfo;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.TransitionInflater;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.eventplanner.adapters.FriendsAdapter;
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,8 +47,9 @@ public class AddFriendActivity extends AppCompatActivity {
 
     // UI elements
     TextInputEditText etSearchQuery;
-    Button btnSearch;
     private String query;
+    ImageView ivNoUserFound;
+    TextView tvNoUserfound;
 
     RecyclerView rvFriends;
     FriendsAdapter adapter;
@@ -61,18 +66,29 @@ public class AddFriendActivity extends AppCompatActivity {
 
         // setup UI
         etSearchQuery = findViewById(R.id.etSearchQuery);
-        btnSearch = findViewById(R.id.btnSearch);
         rvFriends = findViewById(R.id.rvFriends);
+        ivNoUserFound = findViewById(R.id.ivNoUserFound);
+        tvNoUserfound = findViewById(R.id.tvNoUserFound);
 
         friendMatches = new ArrayList<>();
         adapter = new FriendsAdapter(this, friendMatches);
         rvFriends.setAdapter(adapter);
         rvFriends.setLayoutManager(new LinearLayoutManager(this));
 
-        btnSearch.setOnClickListener(new View.OnClickListener() {
+        etSearchQuery.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                query = etSearchQuery.getText().toString();
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                query = editable.toString();
                 search(query);
             }
         });
@@ -113,6 +129,14 @@ public class AddFriendActivity extends AppCompatActivity {
                 }
                 friendMatches.addAll(usersThatMatched);
                 adapter.notifyDataSetChanged();
+
+                if (usersThatMatched.size() == 0) {
+                    tvNoUserfound.setVisibility(View.VISIBLE);
+                    ivNoUserFound.setVisibility(View.VISIBLE);
+                } else {
+                    tvNoUserfound.setVisibility(View.GONE);
+                    ivNoUserFound.setVisibility(View.GONE);
+                }
 
                 Log.i(TAG, "done: Done");
 
