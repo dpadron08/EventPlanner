@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.job.JobInfo;
 import android.os.Bundle;
 import android.transition.Explode;
 import android.transition.Fade;
@@ -25,12 +26,16 @@ import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.intuit.fuzzymatcher.domain.ElementType.ADDRESS;
@@ -84,38 +89,24 @@ public class AddFriendActivity extends AppCompatActivity {
                     Log.i(TAG, "Username: " + user.getUsername());
                 }
                  */
-                List<QueryItem> input = new ArrayList<>();
-                input.add(new QueryItem("1", search, "none"));
-                for (int i = 0; i < objects.size(); i++) {
-                    input.add(new QueryItem(Integer.toString(i+2), objects.get(i).getUsername(), objects.get(i).getObjectId()));
+
+                ArrayList<TriGramList> triGramAggregate = new ArrayList<>();
+                triGramAggregate.add(new TriGramList(search));
+                for (ParseUser user : objects) {
+                    triGramAggregate.add(new TriGramList(user.getUsername()));
                 }
 
-                List<Document> documentList = new ArrayList<>();
-                for (QueryItem item : input) {
-                    documentList.add(new Document.Builder(item.id)
-                    .addElement(new Element.Builder<String>().setValue(item.name).setType(NAME).setThreshold(0).createElement()).createDocument());
-                    //.addElement(new Element.Builder<String>().setValue(item.name).setType(NAME).setTokenizerFunction(TokenizerFunction.triGramTokenizer()).createElement()).createDocument());
-                }
-
-                MatchService matchService = new MatchService();
-                Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(documentList);
-                //Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(documentList.get(0), documentList);
+                compareAggregateWithHash(triGramAggregate, 0.01);
 
                 List<ParseUser> usersThatMatched = new ArrayList<>();
-                result.entrySet().forEach(entry -> {
-                    entry.getValue().forEach(match -> {
 
-                        // only get the items that the search matched with
-                        if (entry.getKey().equals("1")) {
-                            Log.i(TAG, "Key: " +entry.getKey() + " Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                            // get references to the user objects that matches
-                            usersThatMatched.add(objects.get(  Integer.parseInt(match.getMatchedWith().getKey()) -2 )) ;
-                        }
-
-                    });
-                });
 
                 adapter.clear();
+                for (int i = 1; i < triGramAggregate.size(); i++) {
+                    if (triGramAggregate.get(i).didMatch) {
+                        usersThatMatched.add(objects.get(i-1));
+                    }
+                }
                 friendMatches.addAll(usersThatMatched);
                 adapter.notifyDataSetChanged();
 
@@ -135,17 +126,78 @@ public class AddFriendActivity extends AppCompatActivity {
     }
 
     /**
-     * The input for the MatchService class
+     * Tri gram list for each query
      */
-    public class QueryItem {
-        String id; // the key
-        String name;
-        String objectId;
+    public class TriGramList {
+        ArrayList<String> triGramList;
+        boolean didMatch;
+        String originalString;
 
-        public QueryItem(String id, String name, String objectId) {
-            this.id = id;
-            this.name = name;
-            this.objectId = objectId;
+        public TriGramList(String originalString) {
+            triGramList = new ArrayList<>();
+            didMatch = false;
+            this.originalString = (originalString.replaceAll(" ", ""))
+                    .toLowerCase();
+            findTriGrams();
+        }
+
+        private void findTriGrams() {
+            if (originalString.length() < 3) {
+                triGramList.add(originalString);
+                return;
+            }
+            for (int i = 0; i < originalString.length(); i++) {
+                if (originalString.length() - i <= 3) {
+                    triGramList.add(originalString.substring(i, originalString.length()));
+                    return;
+                }
+                triGramList.add(originalString.substring(i, i+3));
+            }
+        }
+    }
+
+    private void compareAggregateWithHash(ArrayList<TriGramList> triGramAggregate, double threshold) {
+        TriGramList queryTriGramList = triGramAggregate.get(0);
+        for (int i = 1; i < triGramAggregate.size(); i++) {
+
+            // populate hash with query
+            Map<String, Integer> map = new HashMap<>();
+            for (int j = 0; j < queryTriGramList.triGramList.size(); j++) {
+
+                if (map.get( queryTriGramList.triGramList.get(j) ) == null) {
+                    map.put(queryTriGramList.triGramList.get(j), 1);
+                }
+
+            }
+
+            ArrayList<String> currList = triGramAggregate.get(i).triGramList;
+            // populate hash with user result
+            for (int j = 0; j < currList.size(); j++) {
+
+                if (map.get(currList.get(j)) == null) {
+                    map.put(currList.get(j), 1);
+                } else {
+                    map.put(currList.get(j), 2);
+                }
+
+            }
+
+            // determine if match
+            double amountMactched = 0;
+            Set<Map.Entry<String, Integer>> entries = map.entrySet();
+            for (Map.Entry<String, Integer> entry : entries) {
+                if (entry.getValue() == 2) {
+                    amountMactched += 1;
+                }
+            }
+
+            double probability = amountMactched /
+                    (Math.max(queryTriGramList.triGramList.size(), currList.size()) );
+
+            if (probability >= threshold) {
+                triGramAggregate.get(i).didMatch = true;
+            }
+
         }
     }
 }

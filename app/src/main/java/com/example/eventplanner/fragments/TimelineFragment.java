@@ -187,7 +187,7 @@ public class TimelineFragment extends Fragment {
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.i(TAG, "onLoadMore: loading mpre");
+                Log.i(TAG, "onLoadMore: loading more");
                 addMoreEvents();
             }
         };
