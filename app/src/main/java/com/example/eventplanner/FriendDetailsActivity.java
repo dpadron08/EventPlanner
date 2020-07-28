@@ -96,9 +96,15 @@ public class FriendDetailsActivity extends AppCompatActivity {
     private void toggleFriendship() {
         ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
         ParseQuery<ParseUser> query = relation.getQuery();
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 if (e != null) {
                     Log.e(TAG, "done: Unable to query friendship status", e);
                     return;
@@ -131,9 +137,15 @@ public class FriendDetailsActivity extends AppCompatActivity {
     private void queryFriendship() {
         ParseRelation<ParseUser> relation = ParseUser.getCurrentUser().getRelation("friends");
         ParseQuery<ParseUser> query = relation.getQuery();
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> objects, ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 if (e != null) {
                     Log.e(TAG, "done: Unable to query friendship status", e);
                     return;
