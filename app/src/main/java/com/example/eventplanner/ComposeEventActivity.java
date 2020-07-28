@@ -113,6 +113,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickLocation = findViewById(R.id.btnPickLocation);
         tvLocationDisplay = findViewById(R.id.tvLocationDisplay);
         constraintLayout = findViewById(R.id.constraintLayout);
+        setTitle("Add event");
 
         ivEventImage.setImageResource(R.drawable.blankpfp);
         eventLocation = null;

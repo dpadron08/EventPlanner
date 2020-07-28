@@ -69,6 +69,7 @@ public class AddFriendActivity extends AppCompatActivity {
         rvFriends = findViewById(R.id.rvFriends);
         ivNoUserFound = findViewById(R.id.ivNoUserFound);
         tvNoUserfound = findViewById(R.id.tvNoUserFound);
+        setTitle("Add friend");
 
         friendMatches = new ArrayList<>();
         adapter = new FriendsAdapter(this, friendMatches);

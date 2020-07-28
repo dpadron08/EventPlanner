@@ -342,7 +342,7 @@ public class TimelineFragment extends Fragment {
             adapter.notifyItemInserted(0);
             rvEvents.smoothScrollToPosition(0);
 
-            Snackbar.make(constraintLayout, "Event saved successfully", Snackbar.LENGTH_SHORT)
+            Snackbar.make(constraintLayout, "Event saved successfully", Snackbar.LENGTH_LONG)
                     .show();
 
             // add newly created event to list of events the user is subscribed to
