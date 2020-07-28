@@ -44,6 +44,7 @@
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
                 android:contentDescription="Add friend"
+                app:backgroundTint="#0D3290"
                 app:srcCompat="@drawable/ic_add_friend_24" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
