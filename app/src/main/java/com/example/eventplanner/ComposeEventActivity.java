@@ -330,7 +330,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 // RESIZE BITMAP, see section below
-                Bitmap bitmapScaled = scaleToFitHeight(takenImage, 200);
+                Bitmap bitmapScaled = scaleToFitHeight(takenImage, 600);
 
                 /* Without resizing
                 // Load the taken image into a preview
