@@ -56,6 +56,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
         tvFriendInterests = findViewById(R.id.tvFriendInterests);
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
         btnToggleFriend = findViewById(R.id.btnToggleFriend);
+        setTitle("Profile");
 
         tvFriendInterests.setText(friendUser.getString("interests"));
         tvFriendUsername.setText(friendUser.getUsername());

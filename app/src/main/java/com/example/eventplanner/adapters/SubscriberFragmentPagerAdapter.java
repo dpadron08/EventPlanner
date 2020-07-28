@@ -15,7 +15,7 @@ import com.example.eventplanner.models.Event;
 
 public class SubscriberFragmentPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] { "Details", "Whos going" };
+    private String tabTitles[] = new String[] { "Details", "Who's going" };
     private Event event;
 
     public SubscriberFragmentPagerAdapter(FragmentManager fm, Event event) {

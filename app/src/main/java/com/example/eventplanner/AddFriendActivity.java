@@ -96,6 +96,21 @@ public class AddFriendActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (friendMatches == null) {
+            return;
+        }
+        if (friendMatches.isEmpty()) {
+            ivNoUserFound.setVisibility(View.VISIBLE);
+            tvNoUserfound.setVisibility(View.VISIBLE);
+        } else {
+            ivNoUserFound.setVisibility(View.GONE);
+            tvNoUserfound.setVisibility(View.GONE);
+        }
+    }
+
     private void search(String search) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
 

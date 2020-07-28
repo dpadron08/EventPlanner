@@ -48,6 +48,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details);
         ivImage = findViewById(R.id.ivImage);
         container = findViewById(R.id.container);
+        setTitle("Details");
 
         event = (Event) Parcels.unwrap(getIntent().getParcelableExtra("event"));
         ParseFile image = event.getImage();
