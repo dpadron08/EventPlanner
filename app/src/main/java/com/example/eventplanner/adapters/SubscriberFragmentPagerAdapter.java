@@ -9,13 +9,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.example.eventplanner.fragments.CommentsFragment;
 import com.example.eventplanner.fragments.EventDetailsFragment;
 import com.example.eventplanner.fragments.SubscriberFragment;
 import com.example.eventplanner.models.Event;
 
 public class SubscriberFragmentPagerAdapter extends FragmentPagerAdapter {
-    final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] { "Details", "Who's going" };
+    final int PAGE_COUNT = 3;
+    private String tabTitles[] = new String[] { "Details", "Who's going", "Comments" };
     private Event event;
 
     public SubscriberFragmentPagerAdapter(FragmentManager fm, Event event) {
@@ -40,6 +41,11 @@ public class SubscriberFragmentPagerAdapter extends FragmentPagerAdapter {
                 return fragment;
             case 1:
                 fragment = new SubscriberFragment();
+                bundle.putParcelable("event", event);
+                fragment.setArguments(bundle);
+                return fragment;
+            case 2:
+                fragment = new CommentsFragment();
                 bundle.putParcelable("event", event);
                 fragment.setArguments(bundle);
                 return fragment;

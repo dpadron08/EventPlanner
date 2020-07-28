@@ -218,7 +218,7 @@ public class TimelineFragment extends Fragment {
                     Log.e(TAG, "Failed to query events");
                     return;
                 }
-
+                
                 // for debugging purposes let's print every event description to logcat
                 /*
                 for (Event event : objects) {
