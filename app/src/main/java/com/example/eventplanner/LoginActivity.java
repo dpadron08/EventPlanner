@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 goMainActivity();
-                Toast.makeText(LoginActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(LoginActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
             }
         });
     }
