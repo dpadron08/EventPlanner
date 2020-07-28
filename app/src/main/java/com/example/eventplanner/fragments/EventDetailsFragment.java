@@ -98,7 +98,7 @@ public class EventDetailsFragment extends Fragment {
 
         // display Location if it exists
         if (event.getLocation() != null) {
-            String locationStr = "Where: " + getAddress(event.getLocation());
+            String locationStr = "" + getAddress(event.getLocation());
             tvLocation.setText(locationStr);
         }
 
