@@ -81,6 +81,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private static final String TAG = "EventsAdapterViewHolder";
+        public static final int TITLE_MAX_CHARACTER_LIMIT = 30;
         TextView tvTitle;
         //TextView tvDescription;
         TextView tvAuthor;
@@ -109,6 +110,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
         public void bind(final Event event) {
             String title = event.getTitle();
+            if (title.length() > TITLE_MAX_CHARACTER_LIMIT) {
+                title = title.substring(0, 28) + "...";
+            }
             tvTitle.setText(title);
             //tvDescription.setText(event.getDescription());
 
