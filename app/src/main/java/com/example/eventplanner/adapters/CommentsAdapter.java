@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Comment;
 import com.parse.ParseFile;
@@ -84,7 +85,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             ParseFile image = comment.getAuthor().getParseFile("profilePicture");
             if (image != null) {
                 // display image if it exists
-                Glide.with(context).load(image.getUrl()).into(ivProfilePicture);
+                Glide.with(context).load(image.getUrl())
+                        .transform(new CircleCrop())
+                        .into(ivProfilePicture);
             } else {
                 // else use blank placeholder
                 ivProfilePicture.setImageResource(R.drawable.blankpfp);

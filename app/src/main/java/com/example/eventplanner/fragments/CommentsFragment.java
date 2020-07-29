@@ -106,7 +106,9 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         comments = new ArrayList<>();
         adapter = new CommentsAdapter(getContext(), comments);
         rvComments.setAdapter(adapter);
-        rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvComments.setLayoutManager(linearLayoutManager);
         queryComments();
 
         btnFloatingAddComment.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +117,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
                 showEditDialog();
             }
         });
-        
+
     }
 
     private void queryComments() {
@@ -124,7 +126,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         query.include(Comment.KEY_EVENT_OWNER);
         query.include(Comment.KEY_AUTHOR);
         query.whereEqualTo(Comment.KEY_EVENT_OWNER, event);
-        query.addDescendingOrder(Comment.KEY_CREATED_AT);
+        query.addAscendingOrder(Comment.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Comment>() {
             @Override
             public void done(List<Comment> objects, ParseException e) {
@@ -135,7 +137,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
                 }
                 comments.addAll(objects);
                 adapter.notifyDataSetChanged();
-
+                rvComments.scrollToPosition(comments.size()-1);
             }
         });
     }
