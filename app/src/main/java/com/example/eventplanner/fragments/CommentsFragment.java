@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.eventplanner.MainActivity;
@@ -55,6 +56,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
     List<Comment> comments;
     Event event;
     FloatingActionButton btnFloatingAddComment;
+    TextView tvNoCommentsFound;
     ConstraintLayout constraintLayout;
 
     public CommentsFragment() {
@@ -103,6 +105,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         
         rvComments = view.findViewById(R.id.rvComments);
         btnFloatingAddComment = view.findViewById(R.id.btnFloatingAddComment);
+        tvNoCommentsFound = view.findViewById(R.id.tvNoCommentsFound);
         constraintLayout = view.findViewById(R.id.constraintLayout);
         comments = new ArrayList<>();
         adapter = new CommentsAdapter(getContext(), comments);
@@ -133,6 +136,18 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
 
     }
 
+    @Override
+    public void onResume() {
+        if (comments != null) {
+            if (comments.isEmpty()) {
+                tvNoCommentsFound.setVisibility(View.VISIBLE);
+            } else {
+                tvNoCommentsFound.setVisibility(View.GONE);
+            }
+        }
+        super.onResume();
+    }
+
     private void queryComments() {
         adapter.clear();
         ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);
@@ -151,6 +166,11 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
                 comments.addAll(objects);
                 adapter.notifyDataSetChanged();
                 rvComments.scrollToPosition(comments.size()-1);
+                if (comments.isEmpty()) {
+                    tvNoCommentsFound.setVisibility(View.VISIBLE);
+                } else {
+                    tvNoCommentsFound.setVisibility(View.GONE);
+                }
             }
         });
     }
