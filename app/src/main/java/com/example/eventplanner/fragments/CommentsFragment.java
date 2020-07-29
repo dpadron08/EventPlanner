@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,12 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.CommentsAdapter;
 import com.example.eventplanner.adapters.FriendsAdapter;
 import com.example.eventplanner.models.Comment;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -32,7 +35,7 @@ import java.util.List;
  * Use the {@link CommentsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CommentsFragment extends Fragment {
+public class CommentsFragment extends Fragment implements EditCommentDialogFragment.EditNameDialogListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,6 +51,7 @@ public class CommentsFragment extends Fragment {
     CommentsAdapter adapter;
     List<Comment> comments;
     Event event;
+    FloatingActionButton btnFloatingAddComment;
 
     public CommentsFragment() {
         // Required empty public constructor
@@ -94,11 +98,19 @@ public class CommentsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         
         rvComments = view.findViewById(R.id.rvComments);
+        btnFloatingAddComment = view.findViewById(R.id.btnFloatingAddComment);
         comments = new ArrayList<>();
         adapter = new CommentsAdapter(getContext(), comments);
         rvComments.setAdapter(adapter);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
         queryComments();
+
+        btnFloatingAddComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showEditDialog();
+            }
+        });
         
     }
 
@@ -122,5 +134,19 @@ public class CommentsFragment extends Fragment {
 
             }
         });
+    }
+
+    // Call this method to launch the edit dialog
+    private void showEditDialog() {
+        FragmentManager fm = getFragmentManager();
+        EditCommentDialogFragment editNameDialogFragment = EditCommentDialogFragment.newInstance("Some Title", "Some arg");
+        // SETS the target fragment for use later when sending results
+        editNameDialogFragment.setTargetFragment(CommentsFragment.this, 300);
+        editNameDialogFragment.show(fm, "fragment_edit_comment_dialog");
+    }
+
+    @Override
+    public void onFinishEditDialog(String inputText) {
+        Toast.makeText(getContext(), "Hi, " + inputText, Toast.LENGTH_SHORT).show();
     }
 }

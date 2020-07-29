@@ -17,4 +17,9 @@
     <color name="colorSubscribed">#64b5f6</color>
     <color name="colorWhite">#FFFFFF</color>
 
+    <color name="dark_blue">#180065</color>
+    <color name="light_blue">#334ee9ff</color>
+    <color name="medium_green">#3d853e</color>
+    <color name="light_green">#3c2ae668</color>
+
 </resources>
