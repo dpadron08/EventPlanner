@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -58,6 +61,9 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
     FloatingActionButton btnFloatingAddComment;
     TextView tvNoCommentsFound;
     ConstraintLayout constraintLayout;
+
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
     public CommentsFragment() {
         // Required empty public constructor
@@ -149,6 +155,9 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
     }
 
     private void queryComments() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         adapter.clear();
         ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);
         query.include(Comment.KEY_EVENT_OWNER);
@@ -158,6 +167,9 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         query.findInBackground(new FindCallback<Comment>() {
             @Override
             public void done(List<Comment> objects, ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 // check for errors
                 if (e != null) {
                     Log.e(TAG, "Issue with getting comments", e);
@@ -212,5 +224,34 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
             }
         });
 
+    }
+
+    // for inflating our custom action bar with menu items
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    // for progress bar
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        Log.i(TAG, "Get here?");
+
+        // return to finish
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }
