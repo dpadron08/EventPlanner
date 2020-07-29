@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.adapters.CommentsAdapter;
 import com.example.eventplanner.adapters.FriendsAdapter;
@@ -115,6 +116,18 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
             @Override
             public void onClick(View view) {
                 showEditDialog();
+            }
+        });
+
+        rvComments.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && btnFloatingAddComment.getVisibility() == View.VISIBLE) {
+                    btnFloatingAddComment.hide();
+                } else if (dy < 0 && btnFloatingAddComment.getVisibility() != View.INVISIBLE) {
+                    btnFloatingAddComment.show();
+                }
             }
         });
 
