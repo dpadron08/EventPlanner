@@ -22,10 +22,12 @@ import com.example.eventplanner.adapters.FriendsAdapter;
 import com.example.eventplanner.models.Comment;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +54,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
     List<Comment> comments;
     Event event;
     FloatingActionButton btnFloatingAddComment;
+    ConstraintLayout constraintLayout;
 
     public CommentsFragment() {
         // Required empty public constructor
@@ -99,6 +102,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         
         rvComments = view.findViewById(R.id.rvComments);
         btnFloatingAddComment = view.findViewById(R.id.btnFloatingAddComment);
+        constraintLayout = view.findViewById(R.id.constraintLayout);
         comments = new ArrayList<>();
         adapter = new CommentsAdapter(getContext(), comments);
         rvComments.setAdapter(adapter);
@@ -147,6 +151,31 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
 
     @Override
     public void onFinishEditDialog(String inputText) {
-        Toast.makeText(getContext(), "Hi, " + inputText, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "Hi, " + inputText, Toast.LENGTH_SHORT).show();
+        if (inputText.isEmpty()) {
+            Snackbar.make(constraintLayout, "Comment can't be empty", Snackbar.LENGTH_SHORT);
+            return;
+        }
+        addComment(inputText);
+    }
+
+    private void addComment(String commentText) {
+        Comment comment = new Comment();
+        comment.setAuthor(ParseUser.getCurrentUser());
+        comment.setEventOwner(event);
+        comment.setText(commentText);
+
+        comment.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.i(TAG, "done: Error saving comment");
+                    return;
+                }
+                queryComments();
+
+            }
+        });
+
     }
 }
