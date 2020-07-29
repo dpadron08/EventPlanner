@@ -1,6 +1,9 @@
 package com.example.eventplanner.adapters;
 
 import android.content.Context;
+import android.icu.text.SimpleDateFormat;
+import android.net.ParseException;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.util.List;
+import java.util.Locale;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
 
@@ -66,6 +70,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         TextView tvUsername;
         ImageView ivProfilePicture;
         ConstraintLayout container;
+        TextView tvTimestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,6 +78,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivProfilePicture = itemView.findViewById(R.id.ivProfilePicture);
             container = itemView.findViewById(R.id.container);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         public void bind(Comment comment) {
@@ -81,6 +87,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
             tvUsername.setText(author);
             tvText.setText(text);
+            tvTimestamp.setText(getRelativeTimeAgo(comment.getCreatedAt().getTime()));
 
             ParseFile image = comment.getAuthor().getParseFile("profilePicture");
             if (image != null) {
@@ -92,6 +99,31 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 // else use blank placeholder
                 ivProfilePicture.setImageResource(R.drawable.blankpfp);
             }
+        }
+
+        public String getRelativeTimeAgo(long timeInMillis) {
+
+            String relativeDate = "No date found";
+            try {
+                relativeDate = DateUtils.getRelativeTimeSpanString(timeInMillis,
+                        System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+                if (relativeDate.equals("In 0 seconds")) {
+                    return "just now";
+                }
+
+                relativeDate = relativeDate.replaceAll(" hours", "h");
+                relativeDate = relativeDate.replaceAll(" hour", "h");
+                relativeDate = relativeDate.replaceAll(" minutes", "m");
+                relativeDate = relativeDate.replaceAll(" minute", "m");
+                relativeDate = relativeDate.replaceAll(" days", "d");
+                relativeDate = relativeDate.replaceAll(" day", "d");
+                relativeDate = relativeDate.replaceAll(" seconds", "s");
+                relativeDate = relativeDate.replaceAll(" second", "s");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return relativeDate;
         }
     }
 }
