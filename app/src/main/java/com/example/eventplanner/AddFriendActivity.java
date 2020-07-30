@@ -42,6 +42,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * An enum that describes where each tri-gram in the hash table comes from. If a tri-gram is found
+ * in both the query from the search box and from user data, the tri-gram is labeled as a match for
+ * the purposes of displaying search results.
+ */
+enum MatchLevel {
+    FROM_QUERY, // this tri-gram came from the user query
+    FROM_USER, // this tri-gram came from user data (username + interests)
+    MATCH // this tri-gram found in both query and user data. We have a match
+}
+
 public class AddFriendActivity extends AppCompatActivity {
     private static final String TAG = "AddFriendActivity";
 
@@ -214,7 +225,7 @@ public class AddFriendActivity extends AppCompatActivity {
     /**
      * Compares the tri gram list of the query with the tri grams of the queried total list of users.
      * In other words, finds the percentage tri-grams that match between two lists of tri-grams: that of query and each
-     * queried username. Assumes that the query is at index 0. Uses hash tables to check whether
+     * queried user data. Assumes that the query is at index 0. Uses hash tables to check whether
      * matches exist between tri-gram lists
      * @param triGramAggregate the list of tri-gram lists
      * @param threshold the threshold above which two strings are considered a match
@@ -224,13 +235,11 @@ public class AddFriendActivity extends AppCompatActivity {
         for (int i = 1; i < triGramAggregate.size(); i++) {
 
             // populate hash with query
-            Map<String, Integer> map = new HashMap<>();
+            Map<String, MatchLevel> map = new HashMap<>();
             for (int j = 0; j < queryTriGramList.triGramList.size(); j++) {
-
                 if (map.get( queryTriGramList.triGramList.get(j) ) == null) {
-                    map.put(queryTriGramList.triGramList.get(j), 1);
+                    map.put(queryTriGramList.triGramList.get(j), MatchLevel.FROM_QUERY);
                 }
-
             }
 
             ArrayList<String> currList = triGramAggregate.get(i).triGramList;
@@ -238,25 +247,25 @@ public class AddFriendActivity extends AppCompatActivity {
             for (int j = 0; j < currList.size(); j++) {
 
                 if (map.get(currList.get(j)) == null) {
-                    map.put(currList.get(j), 2);
-                } else if (map.get(currList.get(j)) == 1) {
+                    map.put(currList.get(j), MatchLevel.FROM_USER);
+                } else if (map.get(currList.get(j)) == MatchLevel.FROM_QUERY) {
                     // we have match between query and user string
-                    map.put(currList.get(j), 3);
-                } else if (map.get(currList.get(j)) == 2) {
+                    map.put(currList.get(j), MatchLevel.MATCH);
+                } else if (map.get(currList.get(j)) == MatchLevel.FROM_USER) {
                     // nothing, a match between user string tri-grams
                 }
             }
 
             // determine if match
-            double amountMactched = 0;
-            Set<Map.Entry<String, Integer>> entries = map.entrySet();
-            for (Map.Entry<String, Integer> entry : entries) {
-                if (entry.getValue() == 3) {
-                    amountMactched += 1;
+            double amountMatched = 0;
+            Set<Map.Entry<String, MatchLevel>> entries = map.entrySet();
+            for (Map.Entry<String, MatchLevel> entry : entries) {
+                if (entry.getValue() == MatchLevel.MATCH) {
+                    amountMatched += 1;
                 }
             }
 
-            double probability = amountMactched /
+            double probability = amountMatched /
                     (Math.max(queryTriGramList.triGramList.size(), currList.size()) );
 
             if (probability >= threshold) {
