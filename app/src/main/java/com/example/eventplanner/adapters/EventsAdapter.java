@@ -2,6 +2,7 @@ package com.example.eventplanner.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -127,8 +129,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
             // display datetime if it exists
             if (event.getDate() != null) {
-                String date = "When: " + ((Date) event.getDate()).toString();
-                tvDate.setText(date); // get Datetime
+                SimpleDateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.ENGLISH);
+                Date date = event.getDate();
+                String formattedDate = targetFormat.format(date);
+                tvDate.setText(formattedDate);
             }
 
             //tvRestrictions.setText(event.getRestrictions());

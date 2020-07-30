@@ -2,6 +2,7 @@ package com.example.eventplanner.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -119,8 +120,10 @@ public class EventDetailsFragment extends Fragment {
 
 
         if (event.getDate() != null) {
-            String date = ((Date) event.getDate()).toString();
-            tvDate.setText(date); // get Datetime
+            SimpleDateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.ENGLISH);
+            Date date = event.getDate();
+            String formattedDate = targetFormat.format(date);
+            tvDate.setText(formattedDate);
         }
         tvRestrictions.setText(event.getRestrictions());
 
@@ -195,8 +198,10 @@ public class EventDetailsFragment extends Fragment {
                     tvLocation.setText(locationStr);
                 }
                 if (event.getDate() != null) {
-                    String date = ((Date) event.getDate()).toString();
-                    tvDate.setText(date); // get Datetime
+                    SimpleDateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.ENGLISH);
+                    Date date = event.getDate();
+                    String formattedDate = targetFormat.format(date);
+                    tvDate.setText(formattedDate);
                 }
                 tvRestrictions.setText(event.getRestrictions());
             }
