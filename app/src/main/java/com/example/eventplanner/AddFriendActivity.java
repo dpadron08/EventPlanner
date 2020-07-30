@@ -1,6 +1,8 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +14,9 @@ import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -57,7 +62,6 @@ public class AddFriendActivity extends AppCompatActivity {
     private static final String TAG = "AddFriendActivity";
 
     // UI elements
-    TextInputEditText etSearchQuery;
     private String query;
     ImageView ivNoUserFound;
     TextView tvNoUserfound;
@@ -76,7 +80,6 @@ public class AddFriendActivity extends AppCompatActivity {
         setupWindowAnimations();
 
         // setup UI
-        etSearchQuery = findViewById(R.id.etSearchQuery);
         rvFriends = findViewById(R.id.rvFriends);
         ivNoUserFound = findViewById(R.id.ivNoUserFound);
         tvNoUserfound = findViewById(R.id.tvNoUserFound);
@@ -86,25 +89,6 @@ public class AddFriendActivity extends AppCompatActivity {
         adapter = new FriendsAdapter(this, friendMatches);
         rvFriends.setAdapter(adapter);
         rvFriends.setLayoutManager(new LinearLayoutManager(this));
-
-        etSearchQuery.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                query = editable.toString();
-                search(query);
-            }
-        });
-
     }
 
     @Override
@@ -273,5 +257,32 @@ public class AddFriendActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_add_friend, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+                search(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                search(newText);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }
