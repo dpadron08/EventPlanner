@@ -1,12 +1,15 @@
 package com.example.eventplanner.fragments;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +31,7 @@ import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +50,7 @@ public class EventDetailsFragment extends Fragment {
     TextView tvDate;
     TextView tvRestrictions;
     TextView tvCapacity;
+    Button btnCalendar;
 
     private Event event;
 
@@ -91,10 +96,12 @@ public class EventDetailsFragment extends Fragment {
         tvDate = view.findViewById(R.id.tvDate);
         tvRestrictions = view.findViewById(R.id.tvRestrictions);
         tvCapacity = view.findViewById(R.id.tvCapacity);
+        btnCalendar = view.findViewById(R.id.btnCalendar);
 
         tvTitle.setText(event.getTitle());
         tvDescription.setText(event.getDescription());
         tvAuthor.setText(event.getAuthor().getUsername());
+
 
         // display Location if it exists
         if (event.getLocation() != null) {
@@ -128,6 +135,27 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        btnCalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // launch calendar
+                launchCalendar();
+            }
+        });
+    }
+
+    private void launchCalendar() {
+        Intent calIntent = new Intent(Intent.ACTION_INSERT);
+        calIntent.setType("vnd.android.cursor.item/event");
+        //calIntent.setData(CalendarContract.Events.CONTENT_URI);
+        calIntent.putExtra(CalendarContract.Events.TITLE, event.getTitle());
+        calIntent.putExtra(CalendarContract.Events.DESCRIPTION, event.getDescription());
+        // setting time of the event by passing in milliseconds since 1970
+        calIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.getDate().getTime());
+
+        String locationStr = getAddress(event.getLocation());
+        calIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, locationStr);
+        startActivity(calIntent);
     }
 
     private String getAddress(ParseGeoPoint location)  {
