@@ -1,5 +1,6 @@
 package com.example.eventplanner.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.eventplanner.EditEventActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
 import com.parse.FindCallback;
@@ -29,6 +31,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+
+import org.apache.commons.collections4.Get;
+import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -42,6 +47,7 @@ public class EventDetailsFragment extends Fragment {
     private int page;
 
     private static final String TAG = "EventDetailsFragment";
+    public static final int EDIT_EVENT_REQUEST_CODE = 45;
 
     TextView tvTitle;
     TextView tvDescription;
@@ -51,6 +57,7 @@ public class EventDetailsFragment extends Fragment {
     TextView tvRestrictions;
     TextView tvCapacity;
     Button btnCalendar;
+    Button btnEdit;
 
     private Event event;
 
@@ -97,6 +104,7 @@ public class EventDetailsFragment extends Fragment {
         tvRestrictions = view.findViewById(R.id.tvRestrictions);
         tvCapacity = view.findViewById(R.id.tvCapacity);
         btnCalendar = view.findViewById(R.id.btnCalendar);
+        btnEdit = view.findViewById(R.id.btnEdit);
 
         tvTitle.setText(event.getTitle());
         tvDescription.setText(event.getDescription());
@@ -140,6 +148,48 @@ public class EventDetailsFragment extends Fragment {
             public void onClick(View view) {
                 // launch calendar
                 launchCalendar();
+            }
+        });
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchEditEventActivity();
+            }
+        });
+    }
+
+    private void launchEditEventActivity() {
+        Intent intent = new Intent(getContext(), EditEventActivity.class);
+        intent.putExtra("event", Parcels.wrap(event));
+        startActivityForResult(intent, EDIT_EVENT_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == EDIT_EVENT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            reQueryEvent();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void reQueryEvent() {
+        event.fetchInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                event = (Event) object;
+                tvTitle.setText(event.getTitle());
+                tvDescription.setText(event.getDescription());
+                tvAuthor.setText(event.getAuthor().getUsername());
+                // display Location if it exists
+                if (event.getLocation() != null) {
+                    String locationStr = "" + getAddress(event.getLocation());
+                    tvLocation.setText(locationStr);
+                }
+                if (event.getDate() != null) {
+                    String date = ((Date) event.getDate()).toString();
+                    tvDate.setText(date); // get Datetime
+                }
+                tvRestrictions.setText(event.getRestrictions());
             }
         });
     }

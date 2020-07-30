@@ -18,8 +18,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,6 +27,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.eventplanner.fragments.DatePickerFragment;
 import com.example.eventplanner.fragments.TimePickerFragment;
 import com.example.eventplanner.models.Event;
@@ -38,11 +37,9 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
@@ -57,33 +54,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ComposeEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class EditEventActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
-    private static final String TAG = "ComposeEventActivity";
-
+    private static final String TAG = "EditEventActivity";
+    
     // PICK_PHOTO_CODE is a constant integer
     public final static int PICK_PHOTO_CODE = 1046;
     public static final int PLACE_PICKER_REQUEST = 1;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
     String photoFileNameWithCamera = "photo2";
-
-    ImageView ivEventImage;
-    Button btnAddPicture;
-    Button btnTakePicture;
-    TextInputEditText etTitle;
-    EditText etDescription;
-    TextInputEditText etRestrictions;
-    TextInputEditText etCapacity;
-    Button btnSubmit;
-    Button btnPickDate;
-    Button btnPickTime;
-    TextView tvDateTime;
-    Button btnPickLocation;
-    TextView tvLocationDisplay;
-    ConstraintLayout constraintLayout;
-
-    // for the progress loading action item
-    MenuItem miActionProgressItem;
 
     // for getting time, date, location, image for event
     private File photoFile = null;
@@ -92,53 +71,64 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
     boolean timePicked = true;
     boolean datePicked = true;
     LatLng eventLocation = null;
+    
+
+    ImageView ivEventImage;
+    Button btnAddPicture;
+    EditText etTitle;
+    EditText etDescription;
+    EditText etRestrictions;
+    Button btnSave;
+    Button btnPickDate;
+    Button btnPickTime;
+    TextView tvDateTime;
+    Button btnPickLocation;
+    TextView tvLocationDisplay;
+    Button btnTakePicture;
+    ConstraintLayout constraintLayout;
+
+    Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_compose_event);
+        setContentView(R.layout.activity_edit_event);
 
-        // find views
         ivEventImage = findViewById(R.id.ivEventImage);
         btnAddPicture = findViewById(R.id.btnEdit);
-        btnTakePicture = findViewById(R.id.btnTakePicture);
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         etRestrictions = findViewById(R.id.etRestrictions);
-        etCapacity = findViewById(R.id.etCapacity);
-        btnSubmit = findViewById(R.id.btnSubmit);
+        btnSave = findViewById(R.id.btnSubmit);
         btnPickDate = findViewById(R.id.btnPickDate);
         btnPickTime = findViewById(R.id.btnPickTime);
         tvDateTime = findViewById(R.id.tvDateTime);
         btnPickLocation = findViewById(R.id.btnPickLocation);
         tvLocationDisplay = findViewById(R.id.tvLocationDisplay);
+        btnTakePicture = findViewById(R.id.btnTakePicture);
         constraintLayout = findViewById(R.id.constraintLayout);
-        setTitle("Add event");
 
-        ivEventImage.setImageResource(R.drawable.blankpfp);
-        eventLocation = null;
+        event = Parcels.unwrap(getIntent().getParcelableExtra("event"));
+
+        etTitle.setText(event.getTitle());
+        etDescription.setText(event.getDescription());
+        etRestrictions.setText(event.getRestrictions());
+        tvDateTime.setText(event.getDate().toString());
+        calendar.setTime(event.getDate());
+        ParseFile image = event.getImage();
+        if (image != null) {
+            // display image if it exists
+            Glide.with(this).load(image.getUrl()).into(ivEventImage);
+        } else {
+            // else use blank placeholder
+            ivEventImage.setImageResource(R.drawable.blankpfp);
+        }
+        eventLocation = new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude());
+        String locationStr = "Location: " + getAddress(eventLocation);
+        tvLocationDisplay.setText(locationStr);
+
         date = null;
         photoFile = null;
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (etTitle.getText().toString().isEmpty() || etDescription.getText().toString().isEmpty()
-                        || etRestrictions.getText().toString().isEmpty() || etCapacity.getText().toString().isEmpty()) {
-                    // prevent user from not adding a title, description, or restriction
-                    //Toast.makeText(ComposeEventActivity.this, "Please add in all fields", Toast.LENGTH_SHORT).show();
-                    Snackbar.make(constraintLayout, "Please fill in all fields", Snackbar.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
-
-                // create the new event and return to old activity
-                saveEventAndReturn(etTitle.getText().toString(), etDescription.getText().toString(), etRestrictions.getText().toString(),
-                        ParseUser.getCurrentUser(), Integer.parseInt(etCapacity.getText().toString()));
-
-
-            }
-        });
 
         btnAddPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +137,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
                 onPickPhoto(view);
             }
         });
+        
         btnTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,7 +167,7 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             public void onClick(View view) {
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 try {
-                    startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
+                    startActivityForResult(builder.build(EditEventActivity.this), PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
@@ -185,29 +176,19 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             }
         });
 
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveEventAndReturn();
+            }
+        });
 
     }
 
-    // saving event to database
-    private void saveEventAndReturn(String title, String description, String restrictions, ParseUser user, int capacity) {
-        if (miActionProgressItem != null) {
-            showProgressBar();
-            Log.i(TAG, "save event and return");
-        }
-        final Event event = new Event();
-        event.setTitle(title);
-        event.setDescription(description);
-        event.setRestrictions(restrictions);
-        event.setAuthor(user);
-        event.setCapacity(capacity);
-        event.setSubscriberCount(1);
-
-        // only set datetime if both date and time were set
-        if (datePicked && timePicked) {
-            Date date = calendar.getTime();
-            Log.i(TAG, "Date: "+date);
-            event.setDate(date);
-        }
+    private void saveEventAndReturn() {
+        event.setTitle(etTitle.getText().toString());
+        event.setDescription(etDescription.getText().toString());
+        event.setRestrictions(etRestrictions.getText().toString());
         if (photoFile != null) {
             event.setImage(new ParseFile(photoFile));
         }
@@ -215,29 +196,20 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
             ParseGeoPoint parseGeoPoint = new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude);
             event.setLocation(parseGeoPoint);
         }
-        event.getRelation("subscribers").add(ParseUser.getCurrentUser());
+        event.setDate(calendar.getTime());
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (miActionProgressItem != null) {
-                    hideProgressBar();
-                }
                 if (e != null) {
-                    Log.e(TAG, "Error while saving event");
-                    Toast.makeText(ComposeEventActivity.this, "Error while saving", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "done: Error saving event", e);
+                    Snackbar.make(constraintLayout, "Error savinf event", Snackbar.LENGTH_SHORT);
+                    return;
                 }
-                //Toast.makeText(ComposeEventActivity.this, "Post saved successfully", Toast.LENGTH_SHORT).show();
-
-                // return to old context with this new data
                 Intent intent = new Intent();
-                intent.putExtra("event", Parcels.wrap(event));
                 setResult(RESULT_OK, intent);
-
-                finish();  // closes the activity, pass data to parent
-                overridePendingTransition(R.anim.no_animation, R.anim.slide_down_back);
+                finish();
             }
         });
-
     }
 
     // Trigger gallery selection for a photo
@@ -272,7 +244,6 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         return image;
     }
 
-    // see https://stackoverflow.com/questions/7769806/convert-bitmap-to-file
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -410,41 +381,6 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         }
     }
 
-    // for action bar
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu, this adds items to the action bar if it is present
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        if (miActionProgressItem != null) {
-            hideProgressBar();
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    // for progress bar
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // Store instance of the menu item containing progress
-        miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        if (miActionProgressItem != null) {
-            hideProgressBar();
-        }
-
-        // return to finish
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    // making the progress bar visible and invisible
-    public void showProgressBar() {
-        // Show progress item
-        miActionProgressItem.setVisible(true);
-    }
-
-    public void hideProgressBar() {
-        // Hide progress item
-        miActionProgressItem.setVisible(false);
-    }
     private String getAddress(LatLng location)  {
         Geocoder geocoder;
         List<Address> addresses = null;

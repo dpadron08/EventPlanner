@@ -23,7 +23,10 @@ import com.example.eventplanner.fragments.EventDetailsFragment;
 import com.example.eventplanner.fragments.SubscriberFragment;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.tabs.TabLayout;
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import org.parceler.Parcels;
@@ -88,5 +91,21 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume: reloading image");
+        event.fetchInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                ParseFile image = ((Event) object).getImage();
+                if (image != null) {
+                    Glide.with(EventDetailsActivity.this).load(image.getUrl()).into(ivImage);
+                } else {
+                    ivImage.setImageResource(R.drawable.blankpfp);
+                }
+            }
+        });
 
+    }
 }
