@@ -127,7 +127,8 @@ public class AddFriendActivity extends AppCompatActivity {
                 triGramAggregate.add(new TriGramList(search));
                 // add each users' username into the triGramListAggregate
                 for (ParseUser user : objects) {
-                    triGramAggregate.add(new TriGramList(user.getUsername()));
+                    //triGramAggregate.add(new TriGramList(user.getUsername()));
+                    triGramAggregate.add(new TriGramList(user.getUsername() + " " + user.getString("interests") ));
                 }
 
                 // determine whether or not each username in the database matches with the query
@@ -235,10 +236,14 @@ public class AddFriendActivity extends AppCompatActivity {
             ArrayList<String> currList = triGramAggregate.get(i).triGramList;
             // populate hash with user result
             for (int j = 0; j < currList.size(); j++) {
+
                 if (map.get(currList.get(j)) == null) {
-                    map.put(currList.get(j), 1);
-                } else {
                     map.put(currList.get(j), 2);
+                } else if (map.get(currList.get(j)) == 1) {
+                    // we have match between query and user string
+                    map.put(currList.get(j), 3);
+                } else if (map.get(currList.get(j)) == 2) {
+                    // nothing, a match between user string tri-grams
                 }
             }
 
@@ -246,7 +251,7 @@ public class AddFriendActivity extends AppCompatActivity {
             double amountMactched = 0;
             Set<Map.Entry<String, Integer>> entries = map.entrySet();
             for (Map.Entry<String, Integer> entry : entries) {
-                if (entry.getValue() == 2) {
+                if (entry.getValue() == 3) {
                     amountMactched += 1;
                 }
             }

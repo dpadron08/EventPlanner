@@ -212,7 +212,7 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
                 }
                 if (e != null) {
                     Log.e(TAG, "done: Error saving event", e);
-                    Snackbar.make(constraintLayout, "Error savinf event", Snackbar.LENGTH_SHORT);
+                    Snackbar.make(constraintLayout, "Error saving event", Snackbar.LENGTH_SHORT);
                     return;
                 }
                 Intent intent = new Intent();
