@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -71,7 +73,9 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
     boolean timePicked = true;
     boolean datePicked = true;
     LatLng eventLocation = null;
-    
+
+    // for the progress loading action item
+    MenuItem miActionProgressItem;
 
     ImageView ivEventImage;
     Button btnAddPicture;
@@ -186,6 +190,9 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
     }
 
     private void saveEventAndReturn() {
+        if (miActionProgressItem != null) {
+            showProgressBar();
+        }
         event.setTitle(etTitle.getText().toString());
         event.setDescription(etDescription.getText().toString());
         event.setRestrictions(etRestrictions.getText().toString());
@@ -200,6 +207,9 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                if (miActionProgressItem != null) {
+                    hideProgressBar();
+                }
                 if (e != null) {
                     Log.e(TAG, "done: Error saving event", e);
                     Snackbar.make(constraintLayout, "Error savinf event", Snackbar.LENGTH_SHORT);
@@ -438,5 +448,41 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
     {
         float factor = height / (float) b.getHeight();
         return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
+    }
+
+    // for action bar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu, this adds items to the action bar if it is present
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // for progress bar
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
+
+        // return to finish
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    // making the progress bar visible and invisible
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }
