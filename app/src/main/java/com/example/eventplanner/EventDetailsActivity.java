@@ -91,6 +91,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * For reloading the image for the event in case it was updated when the user edited it
+     */
     @Override
     protected void onResume() {
         super.onResume();
