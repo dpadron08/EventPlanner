@@ -156,6 +156,15 @@ public class EventDetailsFragment extends Fragment {
                 launchEditEventActivity();
             }
         });
+        enforceOnlyAuthorCanEdit();
+    }
+
+    private void enforceOnlyAuthorCanEdit() {
+        if (!event.getAuthor().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+            btnEdit.setVisibility(View.GONE);
+        } else {
+            btnEdit.setVisibility(View.VISIBLE);
+        }
     }
 
     private void launchEditEventActivity() {
