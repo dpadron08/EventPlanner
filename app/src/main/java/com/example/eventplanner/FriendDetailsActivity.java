@@ -1,6 +1,7 @@
 package com.example.eventplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,9 +17,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
@@ -45,6 +49,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
+    private ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
         tvFriendInterests = findViewById(R.id.tvFriendInterests);
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
         btnToggleFriend = findViewById(R.id.btnToggleFriend);
+        constraintLayout = findViewById(R.id.constraintLayout);
         setTitle("Profile");
 
         tvFriendInterests.setText(friendUser.getString("interests"));
@@ -194,10 +200,71 @@ public class FriendDetailsActivity extends AppCompatActivity {
                     return;
                 }
                 allEvents.addAll(objects);
-                adapter.notifyDataSetChanged();;
+                removeEventsAtCapacity();
+                //adapter.notifyDataSetChanged();; uncomment if you dont want to filter events
 
             }
         });
+    }
+
+    private void removeEventsAtCapacity() {
+        for (Event event : allEvents) {
+            final Event currentEvent = event;
+            currentEvent.fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error trying to remove events filled at capacity. Stopping now: ", e);
+                        Snackbar.make(constraintLayout, "Error trying to remove events filled " +
+                                "at capacity. Stopping now", Snackbar.LENGTH_SHORT)
+                                .show();
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
+
+                    // get population count
+                    final int population = currentEvent.getSubscriberCount();
+                    if (population < currentEvent.getCapacity()) {
+                        // no need to check if current user is a subscriber or not
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
+
+                    // find out if current user is a subscriber
+                    ParseRelation<ParseUser> relation = currentEvent.getRelation("subscribers");
+                    ParseQuery<ParseUser> query = relation.getQuery();
+                    query.findInBackground(new FindCallback<ParseUser>() {
+                        @Override
+                        public void done(List<ParseUser> subscribers, ParseException e2) {
+                            if (e2 != null) {
+                                Log.e(TAG, "done: Error determining if user is a subscriber, for filtering. Stopping now", e2);
+                                Snackbar.make(constraintLayout, "Error determining if user is " +
+                                        "a subscriber, for filtering. Stopping now", Snackbar.LENGTH_SHORT)
+                                        .show();
+                                adapter.notifyDataSetChanged();
+                                return;
+                            }
+                            boolean isSubscriber = false;
+                            for (ParseUser subscriber : subscribers) {
+                                if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId()) ) {
+                                    isSubscriber = true;
+                                    break;
+                                }
+                            }
+
+                            // if user is not currently a subscriber and event is over or at capacity,
+                            // remove this event
+                            if (!isSubscriber && population >= currentEvent.getCapacity()) {
+                                allEvents.remove(currentEvent);
+                                Log.i(TAG, "done: Event deleted");
+                            }
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    });
+                }
+            });
+        }
     }
 
     // for toolbar
