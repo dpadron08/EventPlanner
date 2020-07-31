@@ -406,7 +406,7 @@ public class TimelineFragment extends Fragment {
 
     private void showInfoDialog() {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        InfoDialogFragment infoDialogFragment = InfoDialogFragment.newInstance("The title", "the body here");
+        InfoDialogFragment infoDialogFragment = InfoDialogFragment.newInstance("The title", "the body here", 800, 800);
         infoDialogFragment.show(fm, "fragment_info_dialog");
     }
 
