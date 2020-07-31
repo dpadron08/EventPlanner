@@ -377,6 +377,18 @@ public class TimelineFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Re-querying all events so that any edits done to event show up in timeline immediately
+     */
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        totalQueried = 0;
+        queryEvents();
+    }
+
+
     // for toolbar
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

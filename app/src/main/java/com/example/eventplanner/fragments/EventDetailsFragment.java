@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.EditEventActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -32,6 +33,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.apache.commons.collections4.Get;
 import org.parceler.Parcels;
@@ -59,6 +61,7 @@ public class EventDetailsFragment extends Fragment {
     TextView tvCapacity;
     Button btnCalendar;
     Button btnEdit;
+    Button btnSubscription;
 
     private Event event;
 
@@ -108,11 +111,14 @@ public class EventDetailsFragment extends Fragment {
         tvCapacity = view.findViewById(R.id.tvCapacity);
         btnCalendar = view.findViewById(R.id.btnCalendar);
         btnEdit = view.findViewById(R.id.btnEdit);
+        btnSubscription = view.findViewById(R.id.btnSubscription);
 
         tvTitle.setText(event.getTitle());
         tvDescription.setText(event.getDescription());
         tvAuthor.setText(event.getAuthor().getUsername());
 
+        // change the subscribe button depending on if user is subscribed
+        styleSubscribeButton();
 
         // display Location if it exists
         if (event.getLocation() != null) {
@@ -161,8 +167,55 @@ public class EventDetailsFragment extends Fragment {
                 launchEditEventActivity();
             }
         });
+
+        btnSubscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleSubscription();
+            }
+        });
+
         enforceOnlyAuthorCanEdit();
     }
+
+
+
+    private void styleSubscribeButton() {
+        ParseRelation<ParseUser> relation = event.getRelation("subscribers");
+        ParseQuery<ParseUser> query = relation.getQuery();
+
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> objects, ParseException e) {
+                // once subscribers for event are found,
+
+                    /*
+                    for (ParseUser u : objects) {
+                        Log.i(TAG, "Username subscribed: "+ u.getUsername());
+                    }
+                     */
+                boolean currentUserIsSubscribed = false;
+                for (ParseUser subscriber : objects) {
+                    if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        currentUserIsSubscribed = true;
+                        break;
+                    }
+                }
+
+                if (currentUserIsSubscribed) {
+                    btnSubscription.setText("Subscribed");
+                    btnSubscription.setCompoundDrawablesRelativeWithIntrinsicBounds(getActivity()
+                            .getDrawable(R.drawable.ic_star_filled_24),null, null, null);
+                } else {
+                    btnSubscription.setText("Not subscribed");
+                    btnSubscription.setCompoundDrawablesRelativeWithIntrinsicBounds(getActivity()
+                            .getDrawable(R.drawable.ic_star_unfilled_24),null, null, null);
+                }
+
+            }
+        });
+    }
+
 
     private void enforceOnlyAuthorCanEdit() {
         if (!event.getAuthor().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
@@ -236,5 +289,65 @@ public class EventDetailsFragment extends Fragment {
             return "No address found";
         }
         return addresses.get(0).getAddressLine(0);
+    }
+
+    private void toggleSubscription() {
+        // change the subscription status of this event for the user
+        ParseRelation<ParseUser> relation = event.getRelation("subscribers");
+        ParseQuery<ParseUser> query = relation.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(final List<ParseUser> objects, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Unable to retrieve subscribers for event when toggling subscription", e);
+                    return;
+                }
+                int population = objects.size();
+                boolean isUserSubscribed = false;
+                for (ParseUser subscriber : objects) {
+                    if (subscriber.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        isUserSubscribed = true;
+                        break;
+                    }
+                }
+                if (isUserSubscribed) {
+                    // unsubscribe and change border color
+                    event.getRelation("subscribers").remove(ParseUser.getCurrentUser());
+                    ParseUser.getCurrentUser().getRelation("subscriptions").remove(event);
+                    btnSubscription.setText("Not subscribed");
+                    btnSubscription.setCompoundDrawablesRelativeWithIntrinsicBounds(getActivity()
+                            .getDrawable(R.drawable.ic_star_unfilled_24),null, null, null);
+                    population--;
+
+                } else {
+                    // subscribe and change border color
+                    event.getRelation("subscribers").add(ParseUser.getCurrentUser());
+                    ParseUser.getCurrentUser().getRelation("subscriptions").add(event);
+                    btnSubscription.setText("Subscribed");
+                    btnSubscription.setCompoundDrawablesRelativeWithIntrinsicBounds(getActivity()
+                            .getDrawable(R.drawable.ic_star_filled_24),null, null, null);
+                    population++;
+                }
+                final int finalPopulation = population;
+                //possible problem with race conditions
+                event.setSubscriberCount(finalPopulation);
+                event.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "done: Unable to add to event's subsscribers", e);
+                            return;
+                        }
+                        if (event.getCapacity() > 0) {
+                            String capacity = finalPopulation +"/" +event.getCapacity();
+                            tvCapacity.setText(capacity);
+                        }
+                        ParseUser.getCurrentUser().saveInBackground();
+                    }
+                });
+
+
+            }
+        });
     }
 }
