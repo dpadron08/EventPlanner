@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -372,7 +373,8 @@ public class TimelineFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu, this adds items to the action bar if it is present
-        inflater.inflate(R.menu.menu_main, menu);
+        //inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_timeline, menu);
     }
 
 
@@ -384,6 +386,28 @@ public class TimelineFragment extends Fragment {
         Log.i(TAG, "Get here?");
 
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miInfo:
+                // User chose the Info button
+                showInfoDialog();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    private void showInfoDialog() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        InfoDialogFragment infoDialogFragment = InfoDialogFragment.newInstance("The title", "the body here");
+        infoDialogFragment.show(fm, "fragment_info_dialog");
     }
 
     // making the progress bar visible and invisible
