@@ -58,6 +58,9 @@ import listeners.EndlessRecyclerViewScrollListener;
 public class TimelineFragment extends Fragment {
 
     private static final String TAG = "TimelineFragment";
+    public static final String INFO_BODY = "This is your events timeline. You can preview all events" +
+            " that have been posted by users which have not yet reached capacity. Long tap on an " +
+            "event to subscribe. Or double tap to subscribe and be taken to more details for that event.";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -406,7 +409,8 @@ public class TimelineFragment extends Fragment {
 
     private void showInfoDialog() {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        InfoDialogFragment infoDialogFragment = InfoDialogFragment.newInstance("The title", "the body here", 800, 800);
+        InfoDialogFragment infoDialogFragment = InfoDialogFragment.newInstance("Info",
+                INFO_BODY, 800, 900);
         infoDialogFragment.show(fm, "fragment_info_dialog");
     }
 
