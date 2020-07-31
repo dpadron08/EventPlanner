@@ -96,6 +96,11 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         if (bundle != null) {
             event = bundle.getParcelable("event");
         }
+        // allow fragment to make changes to actionbar
+        setHasOptionsMenu(true);
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
     }
 
     @Override
@@ -140,10 +145,15 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
             }
         });
 
+
+        if (miActionProgressItem != null) {
+            hideProgressBar();
+        }
     }
 
     @Override
     public void onResume() {
+        queryComments();
         if (comments != null) {
             if (comments.isEmpty()) {
                 tvNoCommentsFound.setVisibility(View.VISIBLE);
@@ -238,6 +248,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
     public void onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        hideProgressBar();
         Log.i(TAG, "Get here?");
 
         // return to finish

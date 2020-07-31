@@ -83,6 +83,8 @@ public class EventDetailsFragment extends Fragment {
         if(bundle != null) {
             event =  bundle.getParcelable("event");
         }
+        // allow fragment to make changes to actionbar
+        setHasOptionsMenu(true);
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -185,6 +187,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void reQueryEvent() {
+
         event.fetchInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
