@@ -290,6 +290,11 @@ public class TimelineFragment extends Fragment {
 
                     // get population count
                     final int population = currentEvent.getSubscriberCount();
+                    if (population < currentEvent.getCapacity()) {
+                        // no need to check if current user is a subscriber or not
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
 
                     // find out if current user is a subscriber
                     ParseRelation<ParseUser> relation = currentEvent.getRelation("subscribers");
