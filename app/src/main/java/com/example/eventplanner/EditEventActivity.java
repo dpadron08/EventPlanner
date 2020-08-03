@@ -169,14 +169,7 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
         btnPickLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                try {
-                    startActivityForResult(builder.build(EditEventActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
+                launchLocationPicker();
             }
         });
 
@@ -220,6 +213,18 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
                 finish();
             }
         });
+    }
+
+    private void launchLocationPicker() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            //startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
+            startActivityForResult(builder.build(EditEventActivity.this), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     // Trigger gallery selection for a photo
@@ -294,7 +299,11 @@ public class EditEventActivity extends AppCompatActivity implements DatePickerDi
 
         }
         if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
             if (resultCode != RESULT_OK) {
+                launchLocationPicker();
                 return;
             }
             Place place = PlacePicker.getPlace(data, this);

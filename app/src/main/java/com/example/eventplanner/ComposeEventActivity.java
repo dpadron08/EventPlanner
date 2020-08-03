@@ -36,6 +36,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -174,18 +175,23 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
         btnPickLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                try {
-                    startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                }
+                launchLocationPicker();
             }
         });
 
 
+    }
+
+    private void launchLocationPicker() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        try {
+            //startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
+            startActivityForResult(builder.build(ComposeEventActivity.this), PLACE_PICKER_REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     // saving event to database
@@ -313,7 +319,11 @@ public class ComposeEventActivity extends AppCompatActivity implements DatePicke
 
         }
         if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
             if (resultCode != RESULT_OK) {
+                launchLocationPicker();
                 return;
             }
             Place place = PlacePicker.getPlace(data, this);
