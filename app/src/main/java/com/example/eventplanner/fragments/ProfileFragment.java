@@ -206,6 +206,27 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Re-querying only edited event so that any edits done to event show up in timeline immediately
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        //totalQueried = 0;
+        //queryEvents();
+        if (adapter != null && adapter.getItemCount() != 0) {
+            Event updatedEvent = adapter.getEvent(adapter.getLastPosition());
+            updatedEvent.fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    Event fetchedEvent = (Event) object;
+                    adapter.notifyItemChanged(adapter.getLastPosition(), fetchedEvent);
+                }
+            });
+        }
+    }
+
+
     private void launchCamera() {
         photoFile = null;
         // create Intent to take a picture and return control to the calling application
@@ -251,8 +272,6 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
-
-
     }
 
     private void onPickPhoto(View view) {
