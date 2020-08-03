@@ -1,5 +1,6 @@
 package com.example.eventplanner.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.eventplanner.EventDetailsActivity;
+import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.card.MaterialCardView;
@@ -47,10 +49,21 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
     Context context;
     List<Event> events;
+    int lastSelectedPosition = -1;
 
     public EventsAdapter(Context context, List<Event> events) {
         this.context = context;
         this.events = events;
+    }
+
+    public Event getEvent(int position) {
+        return events.get(position);
+    }
+    public int getLastPosition() {
+        return lastSelectedPosition;
+    }
+    public void setLastPosition(int position) {
+        lastSelectedPosition = position;
     }
 
     @NonNull
@@ -63,7 +76,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Event event = events.get(position);
-        holder.bind(event);
+        holder.bind(event, position);
     }
 
     @Override
@@ -110,7 +123,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             tvCapacity = itemView.findViewById(R.id.tvCapacity);
         }
 
-        public void bind(final Event event) {
+        public void bind(final Event event, int position) {
             String title = event.getTitle();
             if (title.length() > TITLE_MAX_CHARACTER_LIMIT) {
                 title = title.substring(0, 28) + "...";
@@ -155,7 +168,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
                     @Override
                     public boolean onSingleTapConfirmed(MotionEvent e) {
-                        goEventDetailsActivity(event);
+                        goEventDetailsActivity(event, position);
                         return true;
                     }
 
@@ -167,7 +180,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
                         event.fetchInBackground(new GetCallback<ParseObject>() {
                             @Override
                             public void done(ParseObject object, ParseException e) {
-                                goEventDetailsActivity((Event)object);
+                                goEventDetailsActivity((Event)object, position);
                             }
                         });
 
@@ -193,10 +206,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             styleHighlightAndCapacity(event);
         }
 
-        private void goEventDetailsActivity(Event event) {
+        private void goEventDetailsActivity(Event event, int position) {
             Intent intent = new Intent(context, EventDetailsActivity.class);
             intent.putExtra("event", Parcels.wrap(event));
+            intent.putExtra("position", position);
             context.startActivity(intent);
+            lastSelectedPosition = position;
+            //((MainActivity) context).startActivityForResult(intent, 52);
         }
 
         private String getAddress(ParseGeoPoint location)  {

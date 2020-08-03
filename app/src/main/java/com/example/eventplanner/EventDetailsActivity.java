@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -39,7 +40,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private static final String TAG = "EventDetailsActivity";
 
     Event event;
-
 
     ConstraintLayout container;
     FragmentPagerAdapter adapterViewPager;
@@ -111,4 +111,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
     }
+
+
 }
