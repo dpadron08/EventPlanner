@@ -386,7 +386,7 @@ public class TimelineFragment extends Fragment {
         super.onResume();
         //totalQueried = 0;
         //queryEvents();
-        if (adapter != null && adapter.getItemCount() != 0) {
+        if (adapter != null && adapter.getItemCount() != 0 && adapter.getLastPosition() != -1) {
             Event updatedEvent = adapter.getEvent(adapter.getLastPosition());
             updatedEvent.fetchInBackground(new GetCallback<ParseObject>() {
                 @Override
