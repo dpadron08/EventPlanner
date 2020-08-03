@@ -15,6 +15,8 @@ import com.example.eventplanner.fragments.ProfileFragment;
 import com.example.eventplanner.fragments.TimelineFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -27,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // set up container transform
+        setExitSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
+        getWindow().setSharedElementsUseOverlay(false);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

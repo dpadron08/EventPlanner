@@ -10,8 +10,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ import com.example.eventplanner.fragments.EventDetailsFragment;
 import com.example.eventplanner.fragments.SubscriberFragment;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.transition.platform.MaterialContainerTransform;
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -47,6 +51,22 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        View finalContainer = findViewById(android.R.id.content);
+        finalContainer.setTransitionName("shared_item_event");
+        setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
+        MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
+        materialContainerTransform.addTarget(finalContainer);
+        //materialContainerTransform.setStartContainerColor(Color.WHITE);
+        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_THROUGH);
+        materialContainerTransform.setDuration(2000L);
+
+        MaterialContainerTransform materialContainerTransformReverse = new MaterialContainerTransform();
+        materialContainerTransformReverse.addTarget(finalContainer);
+        materialContainerTransformReverse.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransformReverse.setDuration(1000L);
+        //materialContainerTransform.setAllContainerColors(Color.WHITE);
+        getWindow().setSharedElementReturnTransition(materialContainerTransformReverse);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
         ivImage = findViewById(R.id.ivImage);
@@ -60,6 +80,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         } else {
             ivImage.setImageResource(R.drawable.blankpfp);
         }
+
 
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
         adapterViewPager = new SubscriberFragmentPagerAdapter(getSupportFragmentManager(), event);

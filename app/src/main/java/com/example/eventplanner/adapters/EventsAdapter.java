@@ -1,6 +1,7 @@
 package com.example.eventplanner.adapters;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
@@ -210,7 +211,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             Intent intent = new Intent(context, EventDetailsActivity.class);
             intent.putExtra("event", Parcels.wrap(event));
             intent.putExtra("position", position);
-            context.startActivity(intent);
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, "shared_item_event");
+            //context.startActivity(intent);
+            context.startActivity(intent, options.toBundle());
             lastSelectedPosition = position;
             //((MainActivity) context).startActivityForResult(intent, 52);
         }
