@@ -57,13 +57,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
         materialContainerTransform.addTarget(finalContainer);
         //materialContainerTransform.setStartContainerColor(Color.WHITE);
-        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_THROUGH);
-        materialContainerTransform.setDuration(2000L);
+        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransform.setDuration(500L);
+        getWindow().setSharedElementEnterTransition(materialContainerTransform);
 
         MaterialContainerTransform materialContainerTransformReverse = new MaterialContainerTransform();
         materialContainerTransformReverse.addTarget(finalContainer);
         materialContainerTransformReverse.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
-        materialContainerTransformReverse.setDuration(1000L);
+        materialContainerTransformReverse.setDuration(500L);
         //materialContainerTransform.setAllContainerColors(Color.WHITE);
         getWindow().setSharedElementReturnTransition(materialContainerTransformReverse);
 
