@@ -29,4 +29,12 @@
         android:orderInCategory="110"
         app:showAsAction="always"
         android:icon="@drawable/ic_logout" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Log out"
+        android:visible="true"
+        android:orderInCategory="120"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_baseline_settings_24" />
 </menu>

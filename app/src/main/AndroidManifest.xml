@@ -26,7 +26,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".EditEventActivity"></activity>
+        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".EditEventActivity" />
         <activity android:name=".FriendDetailsActivity" />
 
         <provider

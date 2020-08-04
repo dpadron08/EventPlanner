@@ -36,6 +36,7 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.LoginActivity;
 import com.example.eventplanner.MainActivity;
 import com.example.eventplanner.R;
+import com.example.eventplanner.SettingsActivity;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.snackbar.Snackbar;
@@ -471,12 +472,21 @@ public class ProfileFragment extends Fragment {
                 userLogout();
                 return true;
 
+            case R.id.action_settings:
+                launchSettings();
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void launchSettings() {
+        Intent intent = new Intent(getContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 
     // making the progress bar visible and invisible
