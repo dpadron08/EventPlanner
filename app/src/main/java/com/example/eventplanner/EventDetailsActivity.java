@@ -51,23 +51,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        View finalContainer = findViewById(android.R.id.content);
-        finalContainer.setTransitionName("shared_item_event");
-        setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
-        MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
-        materialContainerTransform.addTarget(finalContainer);
-        //materialContainerTransform.setStartContainerColor(Color.WHITE);
-        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
-        materialContainerTransform.setDuration(500L);
-        getWindow().setSharedElementEnterTransition(materialContainerTransform);
 
-        MaterialContainerTransform materialContainerTransformReverse = new MaterialContainerTransform();
-        materialContainerTransformReverse.addTarget(finalContainer);
-        materialContainerTransformReverse.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
-        materialContainerTransformReverse.setDuration(500L);
-        //materialContainerTransform.setAllContainerColors(Color.WHITE);
-        getWindow().setSharedElementReturnTransition(materialContainerTransformReverse);
-
+        setUpContainerTransform();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
         ivImage = findViewById(R.id.ivImage);
@@ -111,6 +96,25 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void setUpContainerTransform() {
+        View finalContainer = findViewById(android.R.id.content);
+        finalContainer.setTransitionName("shared_item_event");
+        setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
+        MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
+        materialContainerTransform.addTarget(finalContainer);
+        //materialContainerTransform.setStartContainerColor(Color.WHITE);
+        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransform.setDuration(500L);
+        getWindow().setSharedElementEnterTransition(materialContainerTransform);
+
+        MaterialContainerTransform materialContainerTransformReverse = new MaterialContainerTransform();
+        materialContainerTransformReverse.addTarget(finalContainer);
+        materialContainerTransformReverse.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransformReverse.setDuration(500L);
+        //materialContainerTransform.setAllContainerColors(Color.WHITE);
+        getWindow().setSharedElementReturnTransition(materialContainerTransformReverse);
     }
 
     /**

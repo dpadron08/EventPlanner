@@ -5,6 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.example.eventplanner.adapters.EventsAdapter;
 import com.example.eventplanner.models.Event;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.platform.MaterialContainerTransform;
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -53,6 +56,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setUpContainerTransform();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_details);
 
@@ -286,6 +290,26 @@ public class FriendDetailsActivity extends AppCompatActivity {
             });
         }
     }
+
+    private void setUpContainerTransform() {
+        View finalContainer = findViewById(android.R.id.content);
+        finalContainer.setTransitionName("shared_item_friend");
+        setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
+        MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
+        materialContainerTransform.addTarget(finalContainer);
+        materialContainerTransform.setStartContainerColor(Color.WHITE);
+        materialContainerTransform.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransform.setDuration(500L);
+        getWindow().setSharedElementEnterTransition(materialContainerTransform);
+
+        MaterialContainerTransform materialContainerTransformReverse = new MaterialContainerTransform();
+        materialContainerTransformReverse.addTarget(finalContainer);
+        materialContainerTransformReverse.setFadeMode(MaterialContainerTransform.FADE_MODE_OUT);
+        materialContainerTransformReverse.setDuration(500L);
+        materialContainerTransform.setAllContainerColors(Color.WHITE);
+        getWindow().setSharedElementReturnTransition(materialContainerTransformReverse);
+    }
+
 
     // for toolbar
 

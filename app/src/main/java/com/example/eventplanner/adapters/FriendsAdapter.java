@@ -1,5 +1,7 @@
 package com.example.eventplanner.adapters;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -109,7 +111,8 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                     // launch friend details activity
                     Intent intent = new Intent(context, FriendDetailsActivity.class);
                     intent.putExtra("user", Parcels.wrap(user));
-                    context.startActivity(intent);
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, "shared_item_friend");
+                    context.startActivity(intent, options.toBundle());
                 }
             });
         }

@@ -8,7 +8,8 @@
     android:layout_margin="6dp"
     app:cardBackgroundColor="#FFFFFFFF"
     app:cardCornerRadius="12dp"
-    app:cardElevation="20dp">
+    app:cardElevation="20dp"
+    android:transitionName="shared_item_friend">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
