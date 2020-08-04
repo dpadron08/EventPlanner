@@ -465,9 +465,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu, this adds items to the action bar if it is present
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_profile, menu);
     }
-
 
     // for progress bar
     @Override
@@ -476,6 +475,26 @@ public class ProfileFragment extends Fragment {
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
 
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_log_out:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     // making the progress bar visible and invisible
