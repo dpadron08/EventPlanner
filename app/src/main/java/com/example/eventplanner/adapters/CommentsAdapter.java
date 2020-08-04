@@ -1,7 +1,6 @@
 package com.example.eventplanner.adapters;
 
 import android.content.Context;
-import android.icu.text.SimpleDateFormat;
 import android.net.ParseException;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -19,10 +18,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.example.eventplanner.R;
 import com.example.eventplanner.models.Comment;
 import com.parse.ParseFile;
-import com.parse.ParseUser;
 
 import java.util.List;
-import java.util.Locale;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
 
