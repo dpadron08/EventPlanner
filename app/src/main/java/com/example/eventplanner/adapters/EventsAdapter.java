@@ -97,7 +97,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private static final String TAG = "EventsAdapterViewHolder";
-        public static final int TITLE_MAX_CHARACTER_LIMIT = 30;
+        public static final int TITLE_MAX_CHARACTER_LIMIT = 40;
         TextView tvTitle;
         //TextView tvDescription;
         TextView tvAuthor;
@@ -127,7 +127,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         public void bind(final Event event, int position) {
             String title = event.getTitle();
             if (title.length() > TITLE_MAX_CHARACTER_LIMIT) {
-                title = title.substring(0, 28) + "...";
+                title = title.substring(0, TITLE_MAX_CHARACTER_LIMIT-3) + "...";
             }
             tvTitle.setText(title);
             //tvDescription.setText(event.getDescription());
@@ -211,7 +211,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             Intent intent = new Intent(context, EventDetailsActivity.class);
             intent.putExtra("event", Parcels.wrap(event));
             intent.putExtra("position", position);
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, context.getString(R.string.event_transition_animation));
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                    (Activity)context, itemView, context.getString(R.string.event_transition_animation));
             //context.startActivity(intent);
             context.startActivity(intent, options.toBundle());
             lastSelectedPosition = position;
