@@ -93,8 +93,6 @@ public class ProfileFragment extends Fragment {
     EditText etInterests;
     Button btnAddProfilePicture;
     Button btnTakePicture;
-    Button btnLogout;
-    Button btnSave;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -148,8 +146,6 @@ public class ProfileFragment extends Fragment {
         etInterests = view.findViewById(R.id.tvInterests);
         btnAddProfilePicture = view.findViewById(R.id.btnAddProfilePicture);
         btnTakePicture = view.findViewById(R.id.btnTakePicture);
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnSave = view.findViewById(R.id.btnSave);
         queryUserProfile(); // get user attributes and populate the views with data
 
 
@@ -170,19 +166,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 launchCamera();
-            }
-        });
-
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userLogout();
-            }
-        });
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveUserDetails();
             }
         });
     }
@@ -481,12 +464,11 @@ public class ProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                // User chose the "Settings" item, show the app settings UI...
+                saveUserDetails();
                 return true;
 
             case R.id.action_log_out:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+                userLogout();
                 return true;
 
             default:
