@@ -312,7 +312,9 @@ public class ProfileFragment extends Fragment {
                 }
                 etInterests.setText(interests);
                 ParseFile image = ((ParseUser)object).getParseFile("profilePicture");
-                if (image != null) {
+
+                // isAdded() check added so that the OrderDialogFragment could be shown
+                if (image != null && isAdded()) {
                     Glide.with(getContext()).load(image.getUrl()).into(ivProfilePic);
                 } else {
                     ivProfilePic.setImageResource(R.drawable.blankpfp);
