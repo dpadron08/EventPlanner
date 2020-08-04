@@ -67,6 +67,9 @@ public class TimelineFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    // how many events to query per call to database
+    public static final int QUERY_BUFFER_SIZE = 20;
+
     Button btnAddEvent;
     FloatingActionButton btnFloatingAdd;
     ConstraintLayout constraintLayout;
@@ -210,7 +213,7 @@ public class TimelineFragment extends Fragment {
         }
         adapter.clear();
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
-        query.setLimit(10);
+        query.setLimit(QUERY_BUFFER_SIZE);
         //query.setSkip(totalQueried);
         query.include(Event.KEY_AUTHOR);
         // order posts by creation date (newest first)
@@ -248,7 +251,7 @@ public class TimelineFragment extends Fragment {
             showProgressBar();
         }
         ParseQuery<Event> query = ParseQuery.getQuery(Event.class);
-        query.setLimit(10);
+        query.setLimit(QUERY_BUFFER_SIZE);
         query.setSkip(totalQueried);
         query.include(Event.KEY_AUTHOR);
         // order posts by creation date (newest first)
