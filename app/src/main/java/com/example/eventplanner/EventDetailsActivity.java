@@ -100,7 +100,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private void setUpContainerTransform() {
         View finalContainer = findViewById(android.R.id.content);
-        finalContainer.setTransitionName("shared_item_event");
+        finalContainer.setTransitionName(getString(R.string.event_transition_animation));
         setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
         MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
         materialContainerTransform.addTarget(finalContainer);

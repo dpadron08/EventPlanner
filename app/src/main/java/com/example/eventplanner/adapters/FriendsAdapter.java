@@ -111,7 +111,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                     // launch friend details activity
                     Intent intent = new Intent(context, FriendDetailsActivity.class);
                     intent.putExtra("user", Parcels.wrap(user));
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, "shared_item_friend");
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, context.getString(R.string.friend_transition_animation));
                     context.startActivity(intent, options.toBundle());
                 }
             });

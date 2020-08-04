@@ -293,7 +293,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
 
     private void setUpContainerTransform() {
         View finalContainer = findViewById(android.R.id.content);
-        finalContainer.setTransitionName("shared_item_friend");
+        finalContainer.setTransitionName(getString(R.string.friend_transition_animation));
         setEnterSharedElementCallback(new MaterialContainerTransformSharedElementCallback());
         MaterialContainerTransform materialContainerTransform = new MaterialContainerTransform();
         materialContainerTransform.addTarget(finalContainer);

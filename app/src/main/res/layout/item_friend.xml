@@ -9,7 +9,7 @@
     app:cardBackgroundColor="#FFFFFFFF"
     app:cardCornerRadius="12dp"
     app:cardElevation="20dp"
-    android:transitionName="shared_item_friend">
+    android:transitionName="@string/friend_transition_animation">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

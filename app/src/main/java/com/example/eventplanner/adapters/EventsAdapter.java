@@ -211,7 +211,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             Intent intent = new Intent(context, EventDetailsActivity.class);
             intent.putExtra("event", Parcels.wrap(event));
             intent.putExtra("position", position);
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, "shared_item_event");
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, context.getString(R.string.event_transition_animation));
             //context.startActivity(intent);
             context.startActivity(intent, options.toBundle());
             lastSelectedPosition = position;
