@@ -177,7 +177,6 @@
             android:layout_marginEnd="8dp"
             android:text="Not subscribed"
             android:textSize="10sp"
-            app:icon="@drawable/ic_star_unfilled_24"
             app:layout_constraintEnd_toStartOf="@+id/btnEdit"
             app:layout_constraintTop_toBottomOf="@+id/tvRestrictions" />
     </androidx.constraintlayout.widget.ConstraintLayout>
