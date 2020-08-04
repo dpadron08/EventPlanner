@@ -267,6 +267,26 @@ public class FriendDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Re-querying only edited event so that any edits done to event show up in timeline immediately
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        //totalQueried = 0;
+        //queryEvents();
+        if (adapter != null && adapter.getItemCount() != 0 && adapter.getLastPosition() != -1) {
+            Event updatedEvent = adapter.getEvent(adapter.getLastPosition());
+            updatedEvent.fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    Event fetchedEvent = (Event) object;
+                    adapter.notifyItemChanged(adapter.getLastPosition(), fetchedEvent);
+                }
+            });
+        }
+    }
+
     // for toolbar
 
     @Override
