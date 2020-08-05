@@ -1,51 +1,32 @@
 package com.example.eventplanner;
 
+import android.os.Bundle;
+import android.transition.Fade;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.job.JobInfo;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.TransitionInflater;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.example.eventplanner.adapters.FriendsAdapter;
-import com.google.android.material.textfield.TextInputEditText;
-import com.intuit.fuzzymatcher.component.MatchService;
-import com.intuit.fuzzymatcher.domain.Document;
-import com.intuit.fuzzymatcher.domain.Element;
-import com.intuit.fuzzymatcher.domain.Match;
-import com.intuit.fuzzymatcher.domain.MatchType;
-import com.intuit.fuzzymatcher.function.TokenizerFunction;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * An enum that describes where each tri-gram in the hash table comes from. If a tri-gram is found

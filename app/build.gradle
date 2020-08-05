@@ -61,8 +61,6 @@ dependencies {
 
     // for picking location
     implementation 'com.google.android.gms:play-services-places:17.0.0'
-    // for complex algorithm requirement
-    implementation 'com.github.intuit:fuzzy-matcher:1.0.3'
 
     // for unit tests
     testImplementation 'org.robolectric:robolectric:4.3'

@@ -101,9 +101,8 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                 //interests = "Interests: " + user.getString("interests");
             } else {
                 interests = "None";
+                tvInterests.setText(interests);
             }
-            tvInterests.setText(interests);
-            //populateChips(interests);
 
             ParseFile image = user.getParseFile("profilePicture");
             if (image != null) {
