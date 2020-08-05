@@ -69,6 +69,7 @@ public class TimelineFragment extends Fragment {
 
     // how many events to query per call to database
     public static final int QUERY_BUFFER_SIZE = 20;
+    private boolean orderByCreationDate = true;
 
     Button btnAddEvent;
     FloatingActionButton btnFloatingAdd;
@@ -201,7 +202,14 @@ public class TimelineFragment extends Fragment {
 
         rvEvents.addOnScrollListener(scrollListener);
 
-        queryEvents();
+        // retrieve user settings then query events
+        ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                orderByCreationDate = ((ParseUser)object).getBoolean("orderByCreationDate");
+                queryEvents();
+            }
+        });
 
     }
 
@@ -216,8 +224,13 @@ public class TimelineFragment extends Fragment {
         query.setLimit(QUERY_BUFFER_SIZE);
         //query.setSkip(totalQueried);
         query.include(Event.KEY_AUTHOR);
-        // order posts by creation date (newest first)
-        query.addDescendingOrder(Event.KEY_CREATED_AT);
+        // order posts by creation date (newest first) or scheduled date
+        if (orderByCreationDate) {
+            query.addDescendingOrder(Event.KEY_CREATED_AT);
+        } else {
+            query.addAscendingOrder(Event.KEY_DATE);
+        }
+
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
@@ -254,8 +267,12 @@ public class TimelineFragment extends Fragment {
         query.setLimit(QUERY_BUFFER_SIZE);
         query.setSkip(totalQueried);
         query.include(Event.KEY_AUTHOR);
-        // order posts by creation date (newest first)
-        query.addDescendingOrder(Event.KEY_CREATED_AT);
+        // order posts by creation date (newest first) or scheduled date
+        if (orderByCreationDate) {
+            query.addDescendingOrder(Event.KEY_CREATED_AT);
+        } else {
+            query.addAscendingOrder(Event.KEY_DATE);
+        }
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
