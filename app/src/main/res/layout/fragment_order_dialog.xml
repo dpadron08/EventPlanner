@@ -24,16 +24,24 @@
                 android:id="@+id/radio_creation_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:text="Order by creation date" />
 
             <RadioButton
                 android:id="@+id/radio_scheduled_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:text="Order by scheduled date" />
         </RadioGroup>
+
+        <Button
+            android:id="@+id/btnDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Done"
+            app:layout_constraintEnd_toEndOf="@+id/radio_order_group"
+            app:layout_constraintStart_toStartOf="@+id/radio_order_group"
+            app:layout_constraintTop_toBottomOf="@+id/radio_order_group" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

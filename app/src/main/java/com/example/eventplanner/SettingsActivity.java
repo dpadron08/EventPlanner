@@ -4,16 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.example.eventplanner.fragments.OrderDialogFragment;
+import com.example.eventplanner.fragments.ProfileFragment;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -22,7 +25,7 @@ import com.parse.ParseUser;
 
 import org.apache.commons.collections4.Get;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements OrderDialogFragment.OnDonePressedListener {
 
     ParseUser currentUser;
 
@@ -30,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tvUsername;
     Switch swOldEventVisibility;
     Button btnOrder;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
         setTitle("Settings");
 
 
+
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,6 +62,8 @@ public class SettingsActivity extends AppCompatActivity {
         OrderDialogFragment editNameDialogFragment = OrderDialogFragment.newInstance("Some Title", "Hi");
         editNameDialogFragment.show(fm, "fragment_order_dialog");
     }
+
+
 
     private void populateUserFields() {
         currentUser.fetchInBackground(new GetCallback<ParseObject>() {
@@ -82,5 +87,8 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    public void sendSelectedRadioButton(int order) {
+        Toast.makeText(this, "The val: "+ order, Toast.LENGTH_SHORT).show();
+    }
 }

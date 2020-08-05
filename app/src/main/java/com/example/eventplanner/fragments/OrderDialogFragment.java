@@ -1,5 +1,6 @@
 package com.example.eventplanner.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -34,6 +37,13 @@ public class OrderDialogFragment extends DialogFragment {
     private String mParam2;
 
     RadioGroup radioOrderGroup;
+    Button btnDone;
+    int lastChosenRadioButton = 0;
+
+    private OnDonePressedListener listener;
+    public interface OnDonePressedListener {
+        public void sendSelectedRadioButton(int order);
+    }
 
     public OrderDialogFragment() {
         // Required empty public constructor
@@ -66,31 +76,28 @@ public class OrderDialogFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnDonePressedListener) {
+            listener = (OnDonePressedListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement MyListFragment.OnItemSelectedListener");
+        }
+    }
+
+    public void onSomeClick(View v) {
+        listener.sendSelectedRadioButton(lastChosenRadioButton);
+    }
+
     /**
      * For setting the size of info dialog
      */
     @Override
     public void onResume() {
-        getDialog().getWindow().setLayout(700, 500);
+        getDialog().getWindow().setLayout(700, 630);
         super.onResume();
-    }
-
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.radio_creation_date:
-                if (checked)
-                    // Pirates are the best
-                    //Toast.makeText(getContext(), "Selected", Toast.LENGTH_SHORT).show();
-                    break;
-            case R.id.radio_scheduled_date:
-                if (checked)
-                    // Ninjas rule
-                    break;
-        }
     }
 
     @Override
@@ -106,19 +113,30 @@ public class OrderDialogFragment extends DialogFragment {
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         radioOrderGroup = view.findViewById(R.id.radio_order_group);
+        btnDone = view.findViewById(R.id.btnDone);
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSomeClick(view);
+                dismiss();
+            }
+        });
         radioOrderGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                switch(checkedId) {
-                    case R.id.radio_scheduled_date:
-                        Toast.makeText(getContext(), "Hi there", Toast.LENGTH_SHORT).show();
-                        // switch to fragment 1
-                        break;
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch(i) {
                     case R.id.radio_creation_date:
-                        // Fragment 2
+                        lastChosenRadioButton = 0;
+                        break;
+                    case R.id.radio_scheduled_date:
+                        //Toast.makeText(getContext(), "Hi there", Toast.LENGTH_SHORT).show();
+                        lastChosenRadioButton = 1;
+                        break;
+                    default:
                         break;
                 }
             }
         });
+
     }
 }
