@@ -19,6 +19,10 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.eventplanner.R;
+import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,20 +33,20 @@ public class OrderDialogFragment extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_ORDER = "order";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    public enum Order {
+        BY_CREATION_DATE,
+        BY_SCHEDULED_DATE
+    }
+    Order order;
 
     RadioGroup radioOrderGroup;
     Button btnDone;
-    int lastChosenRadioButton = 0;
 
     private OnDonePressedListener listener;
     public interface OnDonePressedListener {
-        public void sendSelectedRadioButton(int order);
+        public void sendSelectedRadioButton(Order order);
     }
 
     public OrderDialogFragment() {
@@ -53,16 +57,13 @@ public class OrderDialogFragment extends DialogFragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment OrderDialogFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OrderDialogFragment newInstance(String param1, String param2) {
+    public static OrderDialogFragment newInstance(int order) {
         OrderDialogFragment fragment = new OrderDialogFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_ORDER, order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,8 +72,12 @@ public class OrderDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            int orderInt = getArguments().getInt(ARG_ORDER);
+            if (orderInt == 1) {
+                order = Order.BY_SCHEDULED_DATE;
+            } else {
+                order = Order.BY_CREATION_DATE;
+            }
         }
     }
 
@@ -88,7 +93,7 @@ public class OrderDialogFragment extends DialogFragment {
     }
 
     public void onSomeClick(View v) {
-        listener.sendSelectedRadioButton(lastChosenRadioButton);
+        listener.sendSelectedRadioButton(order);
     }
 
     /**
@@ -113,12 +118,22 @@ public class OrderDialogFragment extends DialogFragment {
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         radioOrderGroup = view.findViewById(R.id.radio_order_group);
+        // initially check radio buttons based off user settings
+        RadioButton btnCreation = view.findViewById(R.id.radio_creation_date);
+        RadioButton btnScheduled = view.findViewById(R.id.radio_scheduled_date);
+        if (order == Order.BY_CREATION_DATE) {
+            btnCreation.setChecked(true);
+            btnScheduled.setChecked(false);
+        } else if (order == Order.BY_SCHEDULED_DATE) {
+            btnCreation.setChecked(false);
+            btnScheduled.setChecked(true);
+        }
+
         btnDone = view.findViewById(R.id.btnDone);
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSomeClick(view);
-                dismiss();
+                updateUserOrderSettingsAndExit(view);
             }
         });
         radioOrderGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -126,11 +141,10 @@ public class OrderDialogFragment extends DialogFragment {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch(i) {
                     case R.id.radio_creation_date:
-                        lastChosenRadioButton = 0;
+                        order = Order.BY_CREATION_DATE;
                         break;
                     case R.id.radio_scheduled_date:
-                        //Toast.makeText(getContext(), "Hi there", Toast.LENGTH_SHORT).show();
-                        lastChosenRadioButton = 1;
+                        order = Order.BY_SCHEDULED_DATE;
                         break;
                     default:
                         break;
@@ -138,5 +152,24 @@ public class OrderDialogFragment extends DialogFragment {
             }
         });
 
+    }
+
+    private void updateUserOrderSettingsAndExit(View view) {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        boolean isOrderedByCreationDate = true;
+        if (order != Order.BY_CREATION_DATE) {
+            isOrderedByCreationDate = false;
+        }
+        currentUser.put("orderByCreationDate", isOrderedByCreationDate);
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getContext(), "Failed to save settings", Toast.LENGTH_SHORT).show();
+                }
+                onSomeClick(view);
+                dismiss();
+            }
+        });
     }
 }

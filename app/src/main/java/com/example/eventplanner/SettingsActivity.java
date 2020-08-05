@@ -33,6 +33,7 @@ public class SettingsActivity extends AppCompatActivity implements OrderDialogFr
     TextView tvUsername;
     Switch swOldEventVisibility;
     Button btnOrder;
+    OrderDialogFragment.Order order = OrderDialogFragment.Order.BY_CREATION_DATE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,6 @@ public class SettingsActivity extends AppCompatActivity implements OrderDialogFr
         setTitle("Settings");
 
 
-
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,8 +59,12 @@ public class SettingsActivity extends AppCompatActivity implements OrderDialogFr
 
     private void showOrderDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        OrderDialogFragment editNameDialogFragment = OrderDialogFragment.newInstance("Some Title", "Hi");
-        editNameDialogFragment.show(fm, "fragment_order_dialog");
+        int orderInt = 0;
+        if (order == OrderDialogFragment.Order.BY_SCHEDULED_DATE) {
+            orderInt = 1;
+        }
+        OrderDialogFragment orderDialogFragment = OrderDialogFragment.newInstance(orderInt);
+        orderDialogFragment.show(fm, "fragment_order_dialog");
     }
 
 
@@ -83,12 +87,18 @@ public class SettingsActivity extends AppCompatActivity implements OrderDialogFr
                     // set blank profile picture if friend has no profile pic
                     ivProfilePicture.setImageResource(R.drawable.blankpfp);
                 }
+                if (fetchedUser.getBoolean("orderByCreationDate")) {
+                    order = OrderDialogFragment.Order.BY_CREATION_DATE;
+                } else {
+                    order = OrderDialogFragment.Order.BY_SCHEDULED_DATE;
+                }
             }
         });
     }
 
     @Override
-    public void sendSelectedRadioButton(int order) {
+    public void sendSelectedRadioButton(OrderDialogFragment.Order order) {
         Toast.makeText(this, "The val: "+ order, Toast.LENGTH_SHORT).show();
+        this.order = order;
     }
 }
