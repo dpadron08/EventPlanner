@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +15,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.eventplanner.FriendDetailsActivity;
 import com.example.eventplanner.R;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -72,6 +77,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
         TextView tvUsername;
         TextView tvInterests;
         ImageView ivProfilePicture;
+        ChipGroup cgInterests;
 
         // for being able to click on a friend
         ConstraintLayout container;
@@ -82,18 +88,22 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
             tvInterests = itemView.findViewById(R.id.tvInterests);
             ivProfilePicture = itemView.findViewById(R.id.ivProfilePicture);
             container = itemView.findViewById(R.id.container);
+            cgInterests = itemView.findViewById(R.id.cgInterests);
         }
 
         public void bind(final ParseUser user) {
             tvUsername.setText(user.getUsername());
 
-            String interests;
-            if (user.getString("interests") != null) {
-                interests = "Interests: " + user.getString("interests");
+            String interests = user.getString("interests");
+            if (interests != null) {
+                populateChips(interests);
+                tvInterests.setVisibility(View.GONE);
+                //interests = "Interests: " + user.getString("interests");
             } else {
                 interests = "None";
             }
             tvInterests.setText(interests);
+            //populateChips(interests);
 
             ParseFile image = user.getParseFile("profilePicture");
             if (image != null) {
@@ -111,10 +121,27 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
                     // launch friend details activity
                     Intent intent = new Intent(context, FriendDetailsActivity.class);
                     intent.putExtra("user", Parcels.wrap(user));
-                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation((Activity)context, itemView, context.getString(R.string.friend_transition_animation));
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                            (Activity)context, itemView, context.getString(R.string.friend_transition_animation));
                     context.startActivity(intent, options.toBundle());
                 }
             });
+        }
+
+        private void populateChips(String interests) {
+            if (cgInterests.getChildCount() > 0)
+                return;
+
+            String[] interestsArr = interests.split(",");
+            for (String interest : interestsArr) {
+                Chip chip = new Chip(context);
+                chip.setText(interest);
+                int[] colors = {Color.RED, Color.BLACK, Color.GRAY, Color.GREEN, Color.CYAN};
+                //chip.setBackgroundColor(colors[(int)(Math.random()*5)]);
+                chip.setChipBackgroundColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary)));
+                cgInterests.addView(chip);
+
+            }
         }
 
     }
