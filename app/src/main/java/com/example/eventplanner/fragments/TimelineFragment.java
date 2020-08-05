@@ -45,7 +45,9 @@ import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import listeners.EndlessRecyclerViewScrollListener;
@@ -70,6 +72,7 @@ public class TimelineFragment extends Fragment {
     // how many events to query per call to database
     public static final int QUERY_BUFFER_SIZE = 20;
     private boolean orderByCreationDate = true;
+    private boolean hidePastEvents = false;
 
     Button btnAddEvent;
     FloatingActionButton btnFloatingAdd;
@@ -207,6 +210,7 @@ public class TimelineFragment extends Fragment {
             @Override
             public void done(ParseObject object, ParseException e) {
                 orderByCreationDate = ((ParseUser)object).getBoolean("orderByCreationDate");
+                hidePastEvents = ((ParseUser)object).getBoolean("hidePastEvents");
                 queryEvents();
             }
         });
@@ -230,7 +234,9 @@ public class TimelineFragment extends Fragment {
         } else {
             query.addAscendingOrder(Event.KEY_DATE);
         }
-
+        if (hidePastEvents) {
+            query.whereGreaterThan(Event.KEY_DATE, Date.from(Instant.now()));
+        }
         query.findInBackground(new FindCallback<Event>() {
             @Override
             public void done(List<Event> objects, ParseException e) {
@@ -272,6 +278,9 @@ public class TimelineFragment extends Fragment {
             query.addDescendingOrder(Event.KEY_CREATED_AT);
         } else {
             query.addAscendingOrder(Event.KEY_DATE);
+        }
+        if (hidePastEvents) {
+            query.whereGreaterThan(Event.KEY_DATE, Date.from(Instant.now()));
         }
         query.findInBackground(new FindCallback<Event>() {
             @Override
