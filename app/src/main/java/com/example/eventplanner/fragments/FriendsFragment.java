@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.eventplanner.AddFriendActivity;
 import com.example.eventplanner.R;
@@ -60,6 +62,9 @@ public class FriendsFragment extends Fragment {
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
+
+    TextView tvNoFriendsFound;
+    ImageView ivNoFriendsFound;
 
 
     // TODO: Rename and change types of parameters
@@ -131,7 +136,8 @@ public class FriendsFragment extends Fragment {
                 goAddFriendActivity();
             }
         });
-
+        tvNoFriendsFound = view.findViewById(R.id.tvNoFriendsFound);
+        ivNoFriendsFound = view.findViewById(R.id.ivNoFriendsFound);
 
 
         rvFriends = view.findViewById(R.id.rvFriends);
@@ -184,6 +190,7 @@ public class FriendsFragment extends Fragment {
                 for (ParseUser a : allFriends) {
                     Log.i("FriendsFragment", "Friend :  " + a.getUsername());
                 }
+                toggleNoFriendsMessageVisibility();
 
             }
         });
@@ -196,6 +203,18 @@ public class FriendsFragment extends Fragment {
         // refresh friends list after onViewCreated called once
         if (adapter!= null && allFriends != null) {
             queryFriends();
+        }
+    }
+
+    private void toggleNoFriendsMessageVisibility() {
+        if (adapter != null && allFriends != null) {
+            if (adapter.getItemCount() == 0) {
+                tvNoFriendsFound.setVisibility(View.VISIBLE);
+                ivNoFriendsFound.setVisibility(View.VISIBLE);
+            } else {
+                tvNoFriendsFound.setVisibility(View.GONE);
+                ivNoFriendsFound.setVisibility(View.GONE);
+            }
         }
     }
 

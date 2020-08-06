@@ -94,6 +94,7 @@ public class ProfileFragment extends Fragment {
     EditText etInterests;
     Button btnAddProfilePicture;
     Button btnTakePicture;
+    TextView tvNoSubscriptionsFound;
 
     // for the progress loading action item
     MenuItem miActionProgressItem;
@@ -147,6 +148,7 @@ public class ProfileFragment extends Fragment {
         etInterests = view.findViewById(R.id.tvInterests);
         btnAddProfilePicture = view.findViewById(R.id.btnAddProfilePicture);
         btnTakePicture = view.findViewById(R.id.btnTakePicture);
+        tvNoSubscriptionsFound = view.findViewById(R.id.tvNoSubscriptionsFound);
         queryUserProfile(); // get user attributes and populate the views with data
 
 
@@ -346,10 +348,20 @@ public class ProfileFragment extends Fragment {
                     return;
                 }
                 allEvents.addAll(objects);
-                adapter.notifyDataSetChanged();;
-
+                adapter.notifyDataSetChanged();
+                toggleNoSubscriptionsFoundMessage();
             }
         });
+    }
+
+    private void toggleNoSubscriptionsFoundMessage() {
+        if (adapter != null && allEvents != null) {
+            if (adapter.getItemCount() == 0) {
+                tvNoSubscriptionsFound.setVisibility(View.VISIBLE);
+            } else {
+                tvNoSubscriptionsFound.setVisibility(View.GONE);
+            }
+        }
     }
 
     // returning from getting a picture for profile

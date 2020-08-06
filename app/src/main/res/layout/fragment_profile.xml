@@ -99,5 +99,16 @@
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/ivProfilePicture"
             app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
+
+        <TextView
+            android:id="@+id/tvNoSubscriptionsFound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Subscriptions Found"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMySubscriptions"
+            app:layout_constraintVertical_bias="0.3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -44,6 +44,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
     TextView tvFriendInterests;
     ImageView ivProfilePicture;
     Button btnToggleFriend;
+    TextView tvNoSubscriptionsFound;
 
     // for recycler view list of events
     RecyclerView rvEvents;
@@ -65,6 +66,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
         tvFriendInterests = findViewById(R.id.tvFriendInterests);
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
         btnToggleFriend = findViewById(R.id.btnToggleFriend);
+        tvNoSubscriptionsFound = findViewById(R.id.tvNoSubscriptionsFound);
         constraintLayout = findViewById(R.id.constraintLayout);
         setTitle("Profile");
 
@@ -100,6 +102,16 @@ public class FriendDetailsActivity extends AppCompatActivity {
     private void preventFriendingYourself() {
         if (friendUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
             btnToggleFriend.setVisibility(View.GONE);
+        }
+    }
+
+    private void toggleNoSubscriptionsFoundMessage() {
+        if (adapter != null && allEvents != null) {
+            if (adapter.getItemCount() == 0) {
+                tvNoSubscriptionsFound.setVisibility(View.VISIBLE);
+            } else {
+                tvNoSubscriptionsFound.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -206,7 +218,7 @@ public class FriendDetailsActivity extends AppCompatActivity {
                 allEvents.addAll(objects);
                 removeEventsAtCapacity();
                 //adapter.notifyDataSetChanged();; uncomment if you dont want to filter events
-
+                toggleNoSubscriptionsFoundMessage();
             }
         });
     }
