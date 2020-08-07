@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -104,6 +105,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
         TextView tvLocation;
         TextView tvDate;
         //TextView tvRestrictions;
+        TextView tvTimestamp;
         ImageView ivImage;
         ConstraintLayout container;
         MaterialCardView cardView;
@@ -122,6 +124,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             container = itemView.findViewById(R.id.container);
             cardView = itemView.findViewById(R.id.cardView);
             tvCapacity = itemView.findViewById(R.id.tvCapacity);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         public void bind(final Event event, int position) {
@@ -131,6 +134,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
             }
             tvTitle.setText(title);
             //tvDescription.setText(event.getDescription());
+            tvTimestamp.setText(getRelativeTimeAgo(event.getCreatedAt().getTime()));
 
             String author = "By: " + event.getAuthor().getUsername();
             tvAuthor.setText(author);
@@ -324,6 +328,31 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.ViewHolder
 
                 }
             });
+        }
+
+        public String getRelativeTimeAgo(long timeInMillis) {
+
+            String relativeDate = "No date found";
+            try {
+                relativeDate = DateUtils.getRelativeTimeSpanString(timeInMillis,
+                        System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+                if (relativeDate.equals("In 0 seconds")) {
+                    return "just now";
+                }
+
+                relativeDate = relativeDate.replaceAll(" hours", "h");
+                relativeDate = relativeDate.replaceAll(" hour", "h");
+                relativeDate = relativeDate.replaceAll(" minutes", "m");
+                relativeDate = relativeDate.replaceAll(" minute", "m");
+                relativeDate = relativeDate.replaceAll(" days", "d");
+                relativeDate = relativeDate.replaceAll(" day", "d");
+                relativeDate = relativeDate.replaceAll(" seconds", "s");
+                relativeDate = relativeDate.replaceAll(" second", "s");
+            } catch (android.net.ParseException e) {
+                e.printStackTrace();
+            }
+
+            return relativeDate;
         }
     }
 }
