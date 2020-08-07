@@ -101,7 +101,7 @@ public class OrderDialogFragment extends DialogFragment {
      */
     @Override
     public void onResume() {
-        getDialog().getWindow().setLayout(700, 630);
+        getDialog().getWindow().setLayout(700, 580);
         super.onResume();
     }
 

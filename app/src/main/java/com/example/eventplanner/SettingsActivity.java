@@ -141,7 +141,6 @@ public class SettingsActivity extends AppCompatActivity implements OrderDialogFr
 
     @Override
     public void sendSelectedRadioButton(OrderDialogFragment.Order order) {
-        Toast.makeText(this, "The val: "+ order, Toast.LENGTH_SHORT).show();
         this.order = order;
     }
 }
