@@ -177,6 +177,7 @@ public class CommentsFragment extends Fragment implements EditCommentDialogFragm
         query.findInBackground(new FindCallback<Comment>() {
             @Override
             public void done(List<Comment> objects, ParseException e) {
+                adapter.clear();
                 if (miActionProgressItem != null) {
                     hideProgressBar();
                 }
