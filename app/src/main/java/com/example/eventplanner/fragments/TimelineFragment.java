@@ -36,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -209,6 +210,9 @@ public class TimelineFragment extends Fragment {
         ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
+                if (e != null) {
+                    return;
+                }
                 orderByCreationDate = ((ParseUser)object).getBoolean("orderByCreationDate");
                 hidePastEvents = ((ParseUser)object).getBoolean("hidePastEvents");
                 queryEvents();
